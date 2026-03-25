@@ -7,19 +7,21 @@
 </head>
 <body>
     <?php
+    session_start();
+    
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login.php");
+        exit();
+    }
+    
     $masp = $_REQUEST['masp'];
 
-    $post_data = json_encode([
-        "masp" => $masp
-    ]);
-
-    // ← đổi Test1 thành tên project của bạn
-    $api_url = "http://localhost/QLShopDT_API/api/delete_sanpham_api.php";
+    // Gọi RESTful API để xóa sản phẩm
+    $api_url = "http://localhost/QLShopDT_API/api/sanpham/" . $masp;
 
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $response = curl_exec($ch);
     curl_close($ch);
@@ -33,7 +35,9 @@
         }
     else
         {
-            echo "Xóa thất bại: " . $result['message'];
+            echo "<h3>Xóa thất bại</h3>";
+            echo "<p>" . ($result['error'] ?? 'Lỗi không xác định') . "</p>";
+            echo '<a href="sanpham.php">Quay lại</a>';
         }
     ?>
 </body>

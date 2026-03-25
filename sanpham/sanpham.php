@@ -1,21 +1,21 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');;
-include "../header.php";
 session_start();
+
+$page_title = 'Quản lý Sản phẩm';
+$active_nav = 'sanpham';
+include "../header.php";
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
 }
 
-$username = $_SESSION['username'];
-
-// Gọi API lấy danh sách sản phẩm
-$api_url = "http://localhost/QLShopDT_API/api/get_sanpham_api.php"; // ← đổi Test1 thành tên project của bạn
+// Gọi RESTful API lấy danh sách sản phẩm
+$api_url = "http://localhost/QLShopDT_API/api/sanpham";
 
 $ch = curl_init($api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 $response = curl_exec($ch);
 curl_close($ch);
 
