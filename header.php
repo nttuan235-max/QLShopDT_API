@@ -107,31 +107,31 @@ $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
             <a href="./sanpham/sanpham.php"<?php echo nav_active('sanpham'); ?>>
                 <i class="fa fa-mobile-alt"></i> Sản phẩm
             </a>
-            <a href="/danhmuc/danhmuc.php"<?php echo nav_active('danhmuc'); ?>>
+            <a href="./danhmuc/danhmuc.php"<?php echo nav_active('danhmuc'); ?>>
                 <i class="fa fa-list"></i> Danh mục
             </a>
-            <a href="/khachhang/khachhang.php"<?php echo nav_active('khachhang'); ?>>
+            <a href="./khachhang/khachhang.php"<?php echo nav_active('khachhang'); ?>>
                 <i class="fa fa-users"></i> Khách hàng
             </a>
         <?php endif; ?>
         <?php if ($role === 1): ?>
-            <a href="/nhanvien/nhanvien.php"<?php echo nav_active('nhanvien'); ?>>
+            <a href="./nhanvien/nhanvien.php"<?php echo nav_active('nhanvien'); ?>>
                 <i class="fa fa-user-tie"></i> Nhân viên
             </a>
-            <a href="/thongke.php"<?php echo nav_active('thongke'); ?>>
+            <a href="./thongke.php"<?php echo nav_active('thongke'); ?>>
                 <i class="fa fa-chart-bar"></i> Thống kê
             </a>
         <?php endif; ?>
-        <a href="/donhang/donhang.php"<?php echo nav_active('donhang'); ?>>
+        <a href="./donhang/donhang.php"<?php echo nav_active('donhang'); ?>>
             <i class="fa fa-archive"></i> Đơn hàng
         </a>
-        <a href="/vanchuyen/vanchuyen.php"<?php echo nav_active('vanchuyen'); ?>>
+        <a href="./vanchuyen/vanchuyen.php"<?php echo nav_active('vanchuyen'); ?>>
             <i class="fa fa-truck"></i> Giao hàng
         </a>
-        <a href="/giohang/giohang.php"<?php echo nav_active('giohang'); ?>>
+        <a href="./giohang/giohang.php"<?php echo nav_active('giohang'); ?>>
             <i class="fa fa-shopping-cart"></i> Giỏ hàng
         </a>
-        <a href="/thanhtoan/thanhtoan.php"<?php echo nav_active('thanhtoan'); ?>>
+        <a href="./thanhtoan/thanhtoan.php"<?php echo nav_active('thanhtoan'); ?>>
             <i class="fa fa-credit-card"></i> Thanh toán
         </a>
     </nav>
