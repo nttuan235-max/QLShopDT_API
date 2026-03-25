@@ -18,8 +18,8 @@
 
 // ── Kết nối DB nếu chưa có ─────────────────────────────────────────────
 if (!isset($conn)) {
-    include($_SERVER['DOCUMENT_ROOT'] . '/Test1/api/db.php');
-    require_once($_SERVER['DOCUMENT_ROOT'] . '/Test1/api/db.php');
+    include($_SERVER['DOCUMENT_ROOT'] . '/qlshopdt_api/api/db.php');
+    require_once($_SERVER['DOCUMENT_ROOT'] . '/qlshopdt_api/api/db.php');
 }
 
 // ── Lấy role người dùng ────────────────────────────────────────────────
