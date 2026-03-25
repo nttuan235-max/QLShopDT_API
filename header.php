@@ -18,7 +18,6 @@
 
 // ── Kết nối DB nếu chưa có ─────────────────────────────────────────────
 if (!isset($conn)) {
-    include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
     require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
 }
 
@@ -50,7 +49,7 @@ function nav_active(string $key): string {
 }
 
 // ── Đường dẫn gốc (để link CSS/assets luôn đúng dù ở subfolder) ────────
-$root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+$base_url = '/QLShopDT_API';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -60,7 +59,7 @@ $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
     <title><?php echo htmlspecialchars($page_title); ?> — PhoneShop</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>/css/main.css">
     <?php echo $extra_css; ?>
 </head>
 <body>
@@ -68,9 +67,9 @@ $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
 <header class="ps-header">
     <div class="ps-header-top">
 
-        <a href="trangchu.php" class="ps-logo">PHONE<span>SHOP</span></a>
+        <a href="/QLShopDT_API/trangchu.php" class="ps-logo">PHONE<span>SHOP</span></a>
 
-        <form class="ps-search" method="GET" action="/trangchu.php">
+        <form class="ps-search" method="GET" action="/QLShopDT_API/trangchu.php">
             <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..."
                    value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
             <button type="submit"><i class="fa fa-search"></i></button>
@@ -87,57 +86,61 @@ $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
                             <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>
                             <span><?php echo $chucvu; ?></span>
                         </div>
-                        <a href="/profile.php"><i class="fa fa-user"></i> Thông tin cá nhân</a>
-                        <a href="/donhang/donhang.php"><i class="fa fa-box"></i> Đơn hàng của tôi</a>
-                        <a href="/logout.php" class="ps-logout"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a>
+                        <a href="/QLShopDT_API/profile.php"><i class="fa fa-user"></i> Thông tin cá nhân</a>
+                        <a href="/QLShopDT_API/donhang/donhang.php"><i class="fa fa-box"></i> Đơn hàng của tôi</a>
+                        <a href="/QLShopDT_API/logout.php" class="ps-logout"><i class="fa fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/login.php" class="ps-btn-outline"><i class="fa fa-user"></i> Đăng nhập</a>
-                <a href="/register.php" class="ps-btn-fill"><i class="fa fa-key"></i> Đăng ký</a>
+                <a href="/QLShopDT_API/login.php" class="ps-btn-outline"><i class="fa fa-user"></i> Đăng nhập</a>
+                <a href="/QLShopDT_API/register.php" class="ps-btn-fill"><i class="fa fa-key"></i> Đăng ký</a>
             <?php endif; ?>
         </div>
     </div>
 
     <nav class="ps-nav">
-        <a href="../trangchu.php"<?php echo nav_active('trangchu'); ?>>
+        <a href="/QLShopDT_API/trangchu.php"<?php echo nav_active('trangchu'); ?>>
             <i class="fa fa-home"></i> Trang chủ
         </a>
         <?php if ($role === 1 || $role === 2): ?>
-            <a href="./sanpham/sanpham.php"<?php echo nav_active('sanpham'); ?>>
+            <a href="/QLShopDT_API/sanpham/sanpham.php"<?php echo nav_active('sanpham'); ?>>
                 <i class="fa fa-mobile-alt"></i> Sản phẩm
             </a>
-            <a href="./danhmuc/danhmuc.php"<?php echo nav_active('danhmuc'); ?>>
+            <a href="/QLShopDT_API/danhmuc/danhmuc.php"<?php echo nav_active('danhmuc'); ?>>
                 <i class="fa fa-list"></i> Danh mục
             </a>
-            <a href="./khachhang/khachhang.php"<?php echo nav_active('khachhang'); ?>>
+            <a href="/QLShopDT_API/khachhang/khachhang.php"<?php echo nav_active('khachhang'); ?>>
                 <i class="fa fa-users"></i> Khách hàng
             </a>
         <?php endif; ?>
         <?php if ($role === 1): ?>
-            <a href="./nhanvien/nhanvien.php"<?php echo nav_active('nhanvien'); ?>>
+            <a href="/QLShopDT_API/nhanvien/nhanvien.php"<?php echo nav_active('nhanvien'); ?>>
                 <i class="fa fa-user-tie"></i> Nhân viên
             </a>
-            <a href="./thongke.php"<?php echo nav_active('thongke'); ?>>
+            <a href="/QLShopDT_API/thongke.php"<?php echo nav_active('thongke'); ?>>
                 <i class="fa fa-chart-bar"></i> Thống kê
             </a>
-        <?php endif; ?>
-        <a href="./donhang/donhang.php"<?php echo nav_active('donhang'); ?>>
+            
+        <a href="/QLShopDT_API/donhang/donhang.php"<?php echo nav_active('donhang'); ?>>
             <i class="fa fa-archive"></i> Đơn hàng
         </a>
-        <a href="./vanchuyen/vanchuyen.php"<?php echo nav_active('vanchuyen'); ?>>
+        <a href="/QLShopDT_API/vanchuyen/vanchuyen.php"<?php echo nav_active('vanchuyen'); ?>>
             <i class="fa fa-truck"></i> Giao hàng
         </a>
-        <a href="./giohang/giohang.php"<?php echo nav_active('giohang'); ?>>
+        <a href="/QLShopDT_API/giohang/giohang.php"<?php echo nav_active('giohang'); ?>>
             <i class="fa fa-shopping-cart"></i> Giỏ hàng
         </a>
-        <a href="./thanhtoan/thanhtoan.php"<?php echo nav_active('thanhtoan'); ?>>
+        <a href="/QLShopDT_API/thanhtoan/thanhtoan.php"<?php echo nav_active('thanhtoan'); ?>>
             <i class="fa fa-credit-card"></i> Thanh toán
         </a>
+        <?php endif; ?>
     </nav>
 </header>
 
 <!-- Nút giỏ hàng nổi -->
-<a href="/giohang/giohang.php" class="ps-cart-fab">
+<a href="/QLShopDT_API/giohang/giohang.php" class="ps-cart-fab">
     <i class="fa fa-shopping-cart"></i>
 </a>
+
+</body>
+</html>

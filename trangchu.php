@@ -3,9 +3,9 @@ session_start();
 
 $page_title = 'Trang Chủ';
 $active_nav = 'trangchu';
-$extra_css  = '<link rel="stylesheet" href="./css/trangchu.css">';
+$extra_css  = '<link rel="stylesheet" href="/QLShopDT_API/css/trangchu.css">';
 
-include "./header.php";
+require_once "./header.php";
 // $conn đã có từ header.php
 
 // ── Xử lý tìm kiếm ──────────────────────────────────────────

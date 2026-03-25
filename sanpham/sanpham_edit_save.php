@@ -46,12 +46,12 @@
         "madm"    => $madm
     ]);
 
-    // ← đổi Test1 thành tên project của bạn
-    $api_url = "http://localhost/QLShopDT_API/api/update_sanpham_api.php";
+    // Gọi RESTful API để cập nhật sản phẩm (PUT method)
+    $api_url = "http://localhost/QLShopDT_API/api/sanpham/" . $masp;
 
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $response = curl_exec($ch);
@@ -66,7 +66,9 @@
         }
     else
         {
-            echo "Sửa thất bại: " . $result['message'];
+            echo "<h3>Sửa thất bại</h3>";
+            echo "<p>" . ($result['error'] ?? $result['message'] ?? 'Lỗi không xác định') . "</p>";
+            echo '<a href="sanpham.php">Quay lại</a>';
         }
     ?>
 </body>

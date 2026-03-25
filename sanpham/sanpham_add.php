@@ -37,8 +37,8 @@
             "hinhanh" => $hinhanh
         ]);
 
-        // Đổi đường dẫn API cho đúng project của bạn
-        $api_url = "http://localhost/QLShopDT_API/api/insert_sanpham_api.php";
+        // Gọi RESTful API để thêm sản phẩm
+        $api_url = "http://localhost/QLShopDT_API/api/sanpham";
         $options = [
             "http" => [
                 "method"  => "POST",
