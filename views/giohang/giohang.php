@@ -10,8 +10,6 @@ session_start();
     <title>Giỏ hàng</title>
 </head>
 <body>
-    <h1 align="center">GIỎ HÀNG CỦA BẠN</h1>
-    
     <?php
         include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
         require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
@@ -94,7 +92,8 @@ session_start();
             $tongtien += $thanhtien[$stt];
         }
     ?>
-
+    <br>
+    <h1 align="center">GIỎ HÀNG CỦA BẠN</h1>
     <table width="1200" align="center" border="1">
         <tr>
             <th>STT</th>

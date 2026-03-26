@@ -118,7 +118,7 @@ $base_url = '/QLShopDT_API';
             <a href="/QLShopDT_API/views/nhanvien/nhanvien.php"<?php echo nav_active('nhanvien'); ?>>
                 <i class="fa fa-user-tie"></i> Nhân viên
             </a>
-            <a href="/QLShopDT_API/thongke.php"<?php echo nav_active('thongke'); ?>>
+            <a href="/QLShopDT_API/views/thongke/thongke.php"<?php echo nav_active('thongke'); ?>>
                 <i class="fa fa-chart-bar"></i> Thống kê
             </a>
             

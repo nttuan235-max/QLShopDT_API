@@ -37,7 +37,7 @@ $result = mysqli_query($conn, $sql);
         <p>Khám phá hàng ngàn sản phẩm điện thoại, laptop, phụ kiện chính hãng với giá cả cạnh tranh nhất thị trường.</p>
         <div class="ps-hero-cta">
             <a href="#products" class="ps-cta-primary">Mua ngay</a>
-            <a href="/sanpham/sanpham.php" class="ps-cta-secondary">Xem tất cả</a>
+            <a href="./sanpham/sanpham.php" class="ps-cta-secondary">Xem tất cả</a>
         </div>
         <div class="ps-hero-stats">
             <div class="ps-stat"><div class="num">1.200+</div><div class="lbl">Sản phẩm</div></div>
