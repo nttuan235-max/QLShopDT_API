@@ -8,20 +8,25 @@
 </head>
 <body>
     <?php
-        include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
         include "../../includes/header.php";
-        $sql_select = "Select * from `danhmuc`";
-        $result = mysqli_query($conn,$sql_select);
-        $tong_bg=mysqli_num_rows($result);
-
-        $stt = 0;
-        while($row = mysqli_fetch_object($result))
-        {
-            $stt++;
-            $madm[$stt] = $row->madm;
-            $tendm[$stt] = $row->tendm;
-        }
+        
+        // Gọi API lấy danh sách danh mục
+        $post_data = json_encode(['action' => 'getall']);
+        
+        $api_url = "http://localhost/QLShopDT_API/api/danhmuc_api.php";
+        $options = [
+            "http" => [
+                "method"  => "POST",
+                "header"  => "Content-Type: application/json",
+                "content" => $post_data
+            ]
+        ];
+        $context = stream_context_create($options);
+        $response = file_get_contents($api_url, false, $context);
+        $result = json_decode($response, true);
+        
+        $categories = ($result && $result['status']) ? $result['data'] : [];
+        $tong_bg = count($categories);
     ?>
     <br>
     <H1 align = "center">QUẢN LÝ DANH MỤC</H1>
@@ -35,16 +40,16 @@
         </tr>
 
         <?php
-        for ($i=1; $i<=$tong_bg; $i++)
-        {
+        foreach ($categories as $i => $dm) {
+            $stt = $i + 1;
         ?>
             <tr align="center">
-                <td><?php echo $i; ?></td>
-                <td><?php echo $madm[$i] ?></td>
-                <td><?php echo $tendm[$i] ?></td>
+                <td><?php echo $stt; ?></td>
+                <td><?php echo $dm['madm']; ?></td>
+                <td><?php echo $dm['tendm']; ?></td>
                 <td> 
-                    <a href="danhmuc_edit.php?madm=<?php echo $madm[$i] ?>">Sửa</a> |
-                    <a href="danhmuc_del.php?madm=<?php echo $madm[$i]; ?>" 
+                    <a href="danhmuc_edit.php?madm=<?php echo $dm['madm']; ?>">Sửa</a> |
+                    <a href="danhmuc_del.php?madm=<?php echo $dm['madm']; ?>" 
                        onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
                 </td>
             </tr>

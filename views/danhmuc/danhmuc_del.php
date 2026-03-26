@@ -7,12 +7,33 @@
 </head>
 <body>
     <?php
-    include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-    require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');;
-    //Tạo câu truy vấn
-    $sql_del_hangxs="DELETE FROM danhmuc WHERE `danhmuc`.`madm` = $madm";
-	mysqli_query($conn,$sql_del_hangxs);
-	header("Location: danhmuc.php");
+    $madm = $_GET['madm'] ?? 0;
+    
+    // Gọi API để xóa danh mục
+    $post_data = json_encode([
+        "action" => "delete",
+        "madm" => $madm
+    ]);
+    
+    $api_url = "http://localhost/QLShopDT_API/api/danhmuc_api.php";
+    $options = [
+        "http" => [
+            "method"  => "POST",
+            "header"  => "Content-Type: application/json",
+            "content" => $post_data
+        ]
+    ];
+    $context = stream_context_create($options);
+    $response = file_get_contents($api_url, false, $context);
+    $result = json_decode($response, true);
+    
+    if($result && $result['status']) {
+        header("Location: danhmuc.php");
+        exit();
+    } else {
+        echo "<h3>Xóa thất bại</h3>";
+        echo "<p>" . ($result['message'] ?? 'Lỗi không xác định') . "</p>";
+    }
 	?>
 </body>
 </html>

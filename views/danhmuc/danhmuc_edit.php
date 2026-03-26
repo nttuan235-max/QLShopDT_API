@@ -4,31 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../assets/css/nv.css">
-    <title>Document</title>
+    <title>Sửa danh mục</title>
 </head>
 <body>
-    <h1 align = "center">SỬA DANH MỤC</h1>
+    <h1 align="center">SỬA DANH MỤC</h1>
+    
     <?php
-        include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');;
-        $sql_select = "Select * from `danhmuc` where `madm` = '$madm'";
-        $result = mysqli_query($conn, $sql_select);
-        $row = mysqli_fetch_object($result);
-
-        $madm = $row->madm;
-        $tendm = $row->tendm;
+    $madm = $_GET['madm'] ?? $_POST['madm'] ?? 0;
+    $thongbao = "";
+    
+    // Xử lý khi submit form (UPDATE)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $tendm = $_POST['txt_tendm'] ?? '';
+        
+        // Gọi API để cập nhật danh mục
+        $post_data = json_encode([
+            "action" => "update",
+            "madm" => $madm,
+            "tendm" => $tendm
+        ]);
+        
+        $api_url = "http://localhost/QLShopDT_API/api/danhmuc_api.php";
+        $options = [
+            "http" => [
+                "method"  => "POST",
+                "header"  => "Content-Type: application/json",
+                "content" => $post_data
+            ]
+        ];
+        $context = stream_context_create($options);
+        $response = file_get_contents($api_url, false, $context);
+        $result = json_decode($response, true);
+        
+        if($result && $result['status']) {
+            header("Location: danhmuc.php");
+            exit();
+        } else {
+            $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
+        }
+    }
+    
+    // Lấy thông tin danh mục để hiển thị form
+    $post_data = json_encode([
+        "action" => "getone",
+        "madm" => $madm
+    ]);
+    
+    $api_url = "http://localhost/QLShopDT_API/api/danhmuc_api.php";
+    $options = [
+        "http" => [
+            "method"  => "POST",
+            "header"  => "Content-Type: application/json",
+            "content" => $post_data
+        ]
+    ];
+    $context = stream_context_create($options);
+    $response = file_get_contents($api_url, false, $context);
+    $result = json_decode($response, true);
+    
+    if($result && $result['status']) {
+        $category = $result['data'];
+        $tendm = $category['tendm'];
+    } else {
+        echo "<p align='center' style='color:red;'>Không tìm thấy danh mục</p>";
+        echo "<p align='center'><a href='danhmuc.php'>Quay lại</a></p>";
+        exit();
+    }
     ?>
+    
+    <?php if($thongbao): ?>
+        <p align="center" style="color:red;"><?php echo $thongbao; ?></p>
+    <?php endif; ?>
 
-    <form method="post" action="danhmuc_edit_save.php?madm= <?php echo $madm ?>" enctype="multipart/form-data">        
+    <form method="POST" action="" enctype="multipart/form-data">
+        <input type="hidden" name="madm" value="<?php echo $madm; ?>">
         <table align="center" border="1">
             <tr>
-                <td colspan="2" align="center">Thêm danh mục</td>
+                <td colspan="2" align="center">Sửa danh mục</td>
             </tr>
             <tr>
                 <td>Tên danh mục</td>
                 <td>
-                    <input type="text" name="txt_tendm"
-                    value="<?php echo $tendm ?>">
+                    <input type="text" name="txt_tendm" value="<?php echo htmlspecialchars($tendm); ?>" required>
                 </td>
             </tr>
             
