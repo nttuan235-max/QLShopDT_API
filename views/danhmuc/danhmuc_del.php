@@ -7,8 +7,7 @@
 </head>
 <body>
     <?php
-    include "api_helper.php";
-    
+    include "../../includes/api_helper.php";    
     $madm = $_GET['madm'] ?? 0;
     
     // Gọi API để xóa danh mục

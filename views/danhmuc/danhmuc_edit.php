@@ -10,8 +10,7 @@
     <h1 align="center">SỬA DANH MỤC</h1>
     
     <?php
-    include "api_helper.php";
-    
+    include "../../includes/api_helper.php";    
     $madm = $_GET['madm'] ?? $_POST['madm'] ?? 0;
     $thongbao = "";
     

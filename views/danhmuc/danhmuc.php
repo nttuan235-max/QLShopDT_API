@@ -9,7 +9,7 @@
 <body>
     <?php
         include "../../includes/header.php";
-        include "api_helper.php";
+        include "../../includes/api_helper.php";
         
         // Gọi API lấy danh sách danh mục
         $result = callDanhmucAPI(['action' => 'getall']);

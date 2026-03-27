@@ -8,6 +8,7 @@ if (!isset($_SESSION['username'])) {
 $page_title = 'Quản lý Sản phẩm';
 $active_nav = 'sanpham';
 include "../../includes/header.php";
+include "../../includes/api_helper.php";
 
 // Gọi RESTful API lấy danh sách sản phẩm
 $api_url = "http://localhost/QLShopDT_API/api/sanpham";

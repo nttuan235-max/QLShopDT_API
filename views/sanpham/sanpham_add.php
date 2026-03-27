@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,15 +10,22 @@
     <h1 align="center">THÊM SẢN PHẨM</h1>
 
     <?php
-    include "../api/db.php";
-    $result_dm = $conn->query("SELECT * FROM danhmuc");
-    $danhmucs  = [];
-    while ($row = $result_dm->fetch_assoc()) {
-        $danhmucs[] = $row;
+    session_start();
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../login.php");
+        exit();
     }
 
+    include "../../includes/api_helper.php";
+    // Lấy danh sách danh mục qua API
+    $result_dm = callDanhmucAPI(['action' => 'getall']);
+    $danhmucs  = ($result_dm && $result_dm['status']) ? $result_dm['data'] : [];
+
     $thongbao = "";
+
+    // Xử lý khi submit form
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Xử lý upload ảnh
         $hinhanh = "";
         if (!empty($_FILES['img_hinhanh']['name'])) {
             $hinhanh     = basename($_FILES['img_hinhanh']['name']);
@@ -26,7 +33,9 @@
             move_uploaded_file($_FILES['img_hinhanh']['tmp_name'], $upload_path);
         }
 
-        $post_data = json_encode([
+        // Gọi API thêm sản phẩm
+        $result = callSanphamAPI([
+            "action"  => "add",
             "madm"    => $_POST['txt_madm'],
             "tensp"   => $_POST['txt_tensp'],
             "gia"     => $_POST['num_gia'],
@@ -37,24 +46,11 @@
             "hinhanh" => $hinhanh
         ]);
 
-        // Gọi RESTful API để thêm sản phẩm
-        $api_url = "http://localhost/QLShopDT_API/api/sanpham";
-        $options = [
-            "http" => [
-                "method"  => "POST",
-                "header"  => "Content-Type: application/json",
-                "content" => $post_data
-            ]
-        ];
-        $context  = stream_context_create($options);
-        $response = file_get_contents($api_url, false, $context);
-        $json     = json_decode($response, true);
-
-        if ($json['status'] == true) {
+        if ($result && $result['status']) {
             header("Location: sanpham.php");
             exit();
         } else {
-            $thongbao = "Lỗi: " . $json['message'];
+            $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
         }
     }
     ?>
@@ -83,27 +79,27 @@
             </tr>
             <tr>
                 <td>Tên sản phẩm</td>
-                <td><input type="text" name="txt_tensp"></td>
+                <td><input type="text" name="txt_tensp" required></td>
             </tr>
             <tr>
                 <td>Giá</td>
-                <td><input type="number" name="num_gia"></td>
+                <td><input type="number" name="num_gia" min="0" required></td>
             </tr>
             <tr>
                 <td>Số lượng</td>
-                <td><input type="number" name="num_sl"></td>
+                <td><input type="number" name="num_sl" min="0" required></td>
             </tr>
             <tr>
                 <td>Hãng</td>
                 <td><input type="text" name="txt_hang"></td>
             </tr>
             <tr>
-                <td>Bảo hành</td>
+                <td>Bảo hành (tháng)</td>
                 <td><input type="text" name="txt_baohanh"></td>
             </tr>
             <tr>
                 <td>Hình ảnh</td>
-                <td><input type="file" name="img_hinhanh"></td>
+                <td><input type="file" name="img_hinhanh" accept="image/*"></td>
             </tr>
             <tr>
                 <td>Ghi chú</td>

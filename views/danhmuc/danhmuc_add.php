@@ -10,7 +10,7 @@
     <h1 align="center">THÊM DANH MỤC</h1>
     
     <?php
-    include "api_helper.php";
+    include "../../includes/api_helper.php";
     
     $thongbao = "";
     
