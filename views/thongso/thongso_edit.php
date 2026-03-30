@@ -3,46 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sửa thông số</title>
 </head>
 <body>
-    <h1 align = "center">THÔNG SỐ SẢN PHẨM</h1>
+    <h1 align="center">SỬA THÔNG SỐ SẢN PHẨM</h1>
+
     <?php
-        include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        $mats = $_REQUEST["mats"];
-        $sql_select = "Select * from `thongso` where mats='$mats'";
-        $result = mysqli_query($conn,$sql_select);
-        $tong_bg_ts=mysqli_num_rows($result);
+    include "../../includes/api_helper.php";
 
-        $row = mysqli_fetch_object($result);
-        
-        // Sửa lỗi: Kiểm tra $row trước khi truy xuất thuộc tính
-        if ($row) {
-            $mats = $row->mats;
-            $tents = $row->tents;
-            $giatri = $row->giatri;
-            $masp = $row->masp;
+    $mats     = $_GET['mats'] ?? $_POST['mats'] ?? 0;
+    $masp     = $_GET['masp'] ?? $_POST['masp'] ?? 0;
+    $thongbao = "";
+
+    // Xử lý khi submit form (UPDATE)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $tents  = $_POST['txt_tents']  ?? '';
+        $masp   = $_POST['masp']       ?? '';
+        $giatri = $_POST['txt_giatri'] ?? '';
+
+        $result = callThongsoAPI([
+            "action" => "update",
+            "mats"   => $mats,
+            "tents"  => $tents,
+            "masp"   => $masp,
+            "giatri" => $giatri
+        ]);
+
+        if ($result && $result['status']) {
+            header("Location: thongso.php?masp=$masp");
+            exit();
         } else {
-            $mats = "";
-            $tents = "";
-            $giatri = "";
-            $masp = "";
+            $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
         }
+    }
 
-        $sql_get_SP = "Select masp, tensp from sanpham";
-        $result = mysqli_query($conn, $sql_get_SP);
-        $tong_bg = mysqli_num_rows($result);
+    // Lấy thông tin thông số để hiển thị form
+    $result = callThongsoAPI([
+        "action" => "getone",
+        "mats"   => $mats
+    ]);
 
-        $stt = 0;
-        while ($row = mysqli_fetch_object($result)) {
-            $stt++;
-            $idsp[$stt] = $row->masp;
-            $tensp[$stt] = $row->tensp;
-        }
+    if ($result && $result['status']) {
+        $ts     = $result['data'];
+        $tents  = $ts['tents'];
+        $giatri = $ts['giatri'];
+        $masp   = $ts['masp'];   // ghi đè lại masp từ DB (đáng tin cậy hơn)
+    } else {
+        echo "<p align='center' style='color:red;'>Không tìm thấy thông số</p>";
+        echo "<p align='center'><a href='thongso.php?masp=$masp'>Quay lại</a></p>";
+        exit();
+    }
+
+    // Gọi API lấy danh sách sản phẩm cho dropdown
+    $spResult = callThongsoAPI(['action' => 'getsanpham']);
+    $sanphams = ($spResult && $spResult['status']) ? $spResult['data'] : [];
     ?>
 
-    <form method="post" action="thongso_edit_save.php?masp=<?php echo $masp ?>" enctype="multipart/form-data">        
+    <?php if ($thongbao): ?>
+        <p align="center" style="color:red;"><?php echo $thongbao; ?></p>
+    <?php endif; ?>
+
+    <form method="POST" action="" enctype="multipart/form-data">
+        <input type="hidden" name="mats" value="<?php echo $mats; ?>">
         <table align="center" border="1">
             <tr>
                 <td colspan="2" align="center">Sửa thông số</td>
@@ -51,43 +73,37 @@
                 <td>Tên thông số</td>
                 <td>
                     <input type="text" name="txt_tents"
-                    value="<?php echo $tents ?>">
+                           value="<?php echo htmlspecialchars($tents); ?>" required>
                 </td>
             </tr>
-
             <tr>
-                <td>Tên sản phẩm</td>
+                <td>Sản phẩm</td>
                 <td>
-                <select name="masp">
-                    <option value="0">--Chọn sản phẩm--</option>
-                    <?php
-                    for ($i=1; $i<=$tong_bg; $i++)
-                    {
-                    ?>
-                        <option value="<?php echo $idsp[$i] ?>" <?php if($idsp[$i] == $masp) echo 'selected'; ?>>
-                            <?php echo $tensp[$i]?>
-                        </option>
-                    <?php
-                    }
-                    ?>
-                </select>
-            </td>
-
+                    <select name="masp">
+                        <option value="0">--Chọn sản phẩm--</option>
+                        <?php foreach ($sanphams as $sp): ?>
+                            <option value="<?php echo $sp['masp']; ?>"
+                                <?php echo ($sp['masp'] == $masp) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($sp['tensp']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </td>
+            </tr>
             <tr>
                 <td>Giá trị</td>
                 <td>
                     <input type="text" name="txt_giatri"
-                    value="<?php echo $giatri ?>">
+                           value="<?php echo htmlspecialchars($giatri); ?>">
                 </td>
             </tr>
-            
             <tr>
                 <td colspan="2" align="center">
-                <input type="hidden" name="mats" value="<?php echo $mats ?>">
-                <input type="submit" value="OK">
-                <input type="reset" value="Reset">
-                <input type="button" value="Quay lại" onclick="window.location.href='thongso.php?masp=<?php echo $masp ?>'">
-            </td>
+                    <input type="submit" value="OK">
+                    <input type="reset"  value="Reset">
+                    <input type="button" value="Quay lại"
+                           onclick="window.location.href='thongso.php?masp=<?php echo $masp; ?>'">
+                </td>
             </tr>
         </table>
     </form>

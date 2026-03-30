@@ -1,7 +1,4 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-include "../../includes/header.php";
 session_start();
 
 // Kiểm tra đăng nhập
@@ -9,16 +6,6 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
 }
-
-// Lấy thông tin role
-$username = $_SESSION['username'];
-$sql_role = "SELECT role FROM taikhoan WHERE tentk = '$username'";
-$result_role = mysqli_query($conn, $sql_role);
-$row_role = mysqli_fetch_assoc($result_role);
-$role = $row_role['role'];
-
-// role: 1 = Admin, 2 = Nhân viên, 0 = Khách hàng
-$isAdminOrStaff = ($role == 1 || $role == 2);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,44 +15,30 @@ $isAdminOrStaff = ($role == 1 || $role == 2);
     <title>Thông số sản phẩm</title>
 </head>
 <body>
-    <h1 align="center">THÔNG SỐ SẢN PHẨM</h1>
-    
     <?php
-    // Hiển thị thông tin role
-    $chucvu = '';
-    switch ($role) {
-        case 1:
-            $chucvu = 'Admin';
-            break;
-        case 2:
-            $chucvu = 'Nhân viên';
-            break;
-        case 0:
-            $chucvu = 'Khách hàng';
-            break;
-    }
-    ?>
-    
-    <?php 
-        $masp = $_REQUEST["masp"];
-        
-        // Thêm WHERE để lọc theo masp
-        $sql_select = "SELECT ts.mats, ts.tents, ts.giatri, sp.tensp, ts.masp
-                       FROM thongso ts
-                       JOIN sanpham sp ON ts.masp = sp.masp
-                       WHERE ts.masp = '$masp'";  
-        $result = mysqli_query($conn, $sql_select);
-        $tong_bg_ts = mysqli_num_rows($result);
+    include "../../includes/header.php";
+    include "../../includes/api_helper.php";
 
-        $stt = 0;
-        while($row = mysqli_fetch_object($result)) {
-            $stt++;
-            $mats[$stt] = $row->mats;
-            $tents[$stt] = $row->tents;
-            $giatri[$stt] = $row->giatri;
-            $tensp[$stt] = $row->tensp;
-        }
+    $masp = $_GET['masp'] ?? $_REQUEST['masp'] ?? '';
+
+    // Lấy role từ session
+    $role           = $_SESSION['role'] ?? 0;
+    $isAdminOrStaff = ($role == 1 || $role == 2);
+
+    // Gọi API lấy danh sách thông số theo sản phẩm
+    $result = callThongsoAPI([
+        'action' => 'getall',
+        'masp'   => $masp
+    ]);
+
+    $thongsos = ($result && $result['status']) ? $result['data'] : [];
+    $tong_bg  = count($thongsos);
+
+    // Lấy tên sản phẩm từ dòng đầu (nếu có)
+    $tensp = (!empty($thongsos)) ? $thongsos[0]['tensp'] : 'Sản phẩm #' . $masp;
     ?>
+
+    <h1 align="center">THÔNG SỐ SẢN PHẨM</h1>
 
     <table width="1300" align="center" border="1">
         <tr>
@@ -80,28 +53,25 @@ $isAdminOrStaff = ($role == 1 || $role == 2);
             <?php endif; ?>
         </tr>
 
-        <?php
-        for ($i=1; $i<=$tong_bg_ts; $i++) {
-        ?>
+        <?php foreach ($thongsos as $i => $ts): ?>
             <tr align="center">
-                <td><?php echo $i; ?></td>
-                <td><?php echo $tensp[$i]; ?></td>
-                <td><?php echo $tents[$i]; ?></td>
-                <td><?php echo $giatri[$i]; ?></td>
+                <td><?php echo $i + 1; ?></td>
+                <td><?php echo htmlspecialchars($ts['tensp']); ?></td>
+                <td><?php echo htmlspecialchars($ts['tents']); ?></td>
+                <td><?php echo htmlspecialchars($ts['giatri']); ?></td>
                 <?php if ($isAdminOrStaff): ?>
-                <td> 
-                    <a href="thongso_edit.php?mats=<?php echo $mats[$i]; ?>&masp=<?php echo $masp; ?>">Sửa</a> |
-                    <a href="thongso_del.php?mats=<?php echo $mats[$i]; ?>&masp=<?php echo $masp; ?>"
+                <td>
+                    <a href="thongso_edit.php?mats=<?php echo $ts['mats']; ?>&masp=<?php echo $masp; ?>">Sửa</a> |
+                    <a href="thongso_del.php?mats=<?php echo $ts['mats']; ?>&masp=<?php echo $masp; ?>"
                        onclick="return confirm('Bạn có chắc muốn xóa thông số này?')">Xóa</a>
                 </td>
                 <?php endif; ?>
             </tr>
-        <?php
-        }
-        ?>
+        <?php endforeach; ?>
+
         <tr>
             <td colspan="<?php echo $isAdminOrStaff ? '5' : '4'; ?>" align="right">
-                Bảng có <?php echo $tong_bg_ts; ?> thông số
+                Bảng có <?php echo $tong_bg; ?> thông số
             </td>
         </tr>
     </table>

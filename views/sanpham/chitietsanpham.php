@@ -22,16 +22,15 @@ if (!($result_sp && $result_sp['status'])) {
 }
 $sp = $result_sp['data'];
 
-// Lấy thông số kỹ thuật (vẫn dùng DB trực tiếp vì chưa có API thongso)
-include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-$sql_ts    = "SELECT * FROM thongso WHERE masp = '$masp'";
-$result_ts = mysqli_query($conn, $sql_ts);
+// Lấy thông số kỹ thuật qua API
+$result_ts = callThongsoAPI([
+    "action" => "getall",
+    "masp"   => $masp
+]);
+$thongsos = ($result_ts && $result_ts['status']) ? $result_ts['data'] : [];
 
-// Lấy matk từ session
-$username = $_SESSION['username'];
-$sql_tk   = "SELECT matk FROM taikhoan WHERE tentk = '$username'";
-$row_tk   = mysqli_fetch_assoc(mysqli_query($conn, $sql_tk));
-$matk     = $row_tk['matk'];
+// Lấy matk từ session (không cần query DB nữa nếu session đã lưu)
+$matk = $_SESSION['matk'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -127,13 +126,13 @@ $matk     = $row_tk['matk'];
                         <th width="200">Tên thông số</th>
                         <th>Giá trị</th>
                     </tr>
-                    <?php if ($result_ts && mysqli_num_rows($result_ts) > 0): ?>
-                        <?php while ($row_ts = mysqli_fetch_assoc($result_ts)): ?>
+                    <?php if (!empty($thongsos)): ?>
+                        <?php foreach ($thongsos as $ts): ?>
                             <tr>
-                                <td><strong><?php echo htmlspecialchars($row_ts['tents']); ?></strong></td>
-                                <td><?php echo nl2br(htmlspecialchars($row_ts['giatri'])); ?></td>
+                                <td><strong><?php echo htmlspecialchars($ts['tents']); ?></strong></td>
+                                <td><?php echo nl2br(htmlspecialchars($ts['giatri'])); ?></td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="2" align="center">Chưa có thông số kỹ thuật</td>

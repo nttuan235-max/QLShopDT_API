@@ -2,6 +2,7 @@
 define('DANHMUC_API_URL',  'http://localhost/QLShopDT_API/api/danhmuc_api.php');
 define('SANPHAM_API_URL',  'http://localhost/QLShopDT_API/api/sanpham_api.php');
 define('KHACHHANG_API_URL','http://localhost/QLShopDT_API/api/khachhang_api.php');
+define('THONGSO_API_URL',  'http://localhost/QLShopDT_API/api/thongso_api.php');
 
 /**
  * Hàm gọi API chung qua POST (JSON body)
@@ -35,5 +36,10 @@ function callSanphamAPI($data) {
 /** Gọi API khách hàng */
 function callKhachhangAPI($data) {
     return callAPI(KHACHHANG_API_URL, $data);
+}
+
+/** Gọi API thông số */
+function callThongsoAPI($data) {
+    return callAPI(THONGSO_API_URL, $data);
 }
 ?>
