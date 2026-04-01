@@ -9,12 +9,10 @@ $page_title = 'Quản lý Khách hàng';
 $active_nav = 'khachhang';
 include "../../includes/header.php";
 include "../../includes/footer.php";
-include "../../includes/api_helper.php";
+include "../../model/khachhang_model.php";
 
-// Gọi API lấy danh sách khách hàng
-$result = callKhachhangAPI(['action' => 'getall']);
-
-$customers = ($result && $result['status']) ? $result['data'] : [];
+// Lấy danh sách khách hàng từ model
+$customers = KhachHang::getAllCustomers();
 $tong_bg   = count($customers);
 ?>
 <html>

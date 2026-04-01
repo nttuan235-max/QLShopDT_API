@@ -21,6 +21,7 @@ if (!isset($_SESSION['username'])) {
     include "../../includes/header.php";
     include "../../includes/api_helper.php";
     include "../../includes/footer.php";
+    include "../../model/thongso_model.php";
 
     $masp = $_GET['masp'] ?? $_REQUEST['masp'] ?? '';
 
@@ -28,13 +29,8 @@ if (!isset($_SESSION['username'])) {
     $role           = $_SESSION['role'] ?? 0;
     $isAdminOrStaff = ($role == 1 || $role == 2);
 
-    // Gọi API lấy danh sách thông số theo sản phẩm
-    $result = callThongsoAPI([
-        'action' => 'getall',
-        'masp'   => $masp
-    ]);
-
-    $thongsos = ($result && $result['status']) ? $result['data'] : [];
+    // Lấy danh sách thông số từ model
+    $thongsos = ThongSo::getThongSoByProduct($masp);
     $tong_bg  = count($thongsos);
 
     // Lấy tên sản phẩm từ dòng đầu (nếu có)

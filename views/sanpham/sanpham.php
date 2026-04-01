@@ -11,13 +11,10 @@ $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/footer.css">
 include "../../includes/header.php";
 include "../../includes/api_helper.php";
 include "../../includes/footer.php";
+include "../../model/sanpham_model.php";
 
-// Gọi RESTful API lấy danh sách sản phẩm
-$api_url = "http://localhost/QLShopDT_API/api/sanpham";
-
-//Gọi API lấy danh sách sản phẩm
-$result = callSanphamAPI(['action' => 'getall']);
-$sanpham_list = ($result && $result['status']) ? $result['data'] : [];
+// Lấy danh sách sản phẩm từ model
+$sanpham_list = SanPham::getAllProducts();
 ?>
 <html>
     <link rel="stylesheet" href="/QLShopDT_API/assets/css/sanpham.css">

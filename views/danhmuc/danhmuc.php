@@ -10,12 +10,10 @@ $active_nav = 'danhmuc';
 $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/footer.css">';
 include "../../includes/header.php";
 include "../../includes/footer.php";
-include "../../includes/api_helper.php";
+include "../../model/danhmuc_model.php";
 
-// Gọi API lấy danh sách danh mục
-$result = callDanhmucAPI(['action' => 'getall']);
-
-$categories = ($result && $result['status']) ? $result['data'] : [];
+// Lấy danh sách danh mục từ model
+$categories = DanhMuc::getAllCategories();
 $tong_bg = count($categories);
 ?>
 
