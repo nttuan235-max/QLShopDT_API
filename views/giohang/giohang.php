@@ -15,6 +15,7 @@ session_start();
         require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
         include "../../includes/header.php";
         include "../../includes/footer.php";
+
         if (!isset($_SESSION['username'])) {
             echo "<p align='center'>Vui lòng <a href='../login.php'>đăng nhập</a> để xem giỏ hàng</p>";
             exit();
@@ -112,7 +113,7 @@ session_start();
         ?>
             <tr align="center">
                 <td><?php echo $i; ?></td>
-                <td><img src="../img/<?php echo $hinhanh[$i]; ?>" width="80"></td>
+                <td><img src="../../includes/img/<?php echo $hinhanh[$i]; ?>" width="80"></td>
                 <td><?php echo $tensp[$i]; ?></td>
                 <td><?php echo $hang[$i]; ?></td>
                 <td><?php echo number_format($gia[$i]); ?> VNĐ</td>
