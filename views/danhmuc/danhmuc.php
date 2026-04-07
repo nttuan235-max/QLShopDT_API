@@ -13,7 +13,7 @@ include "../../includes/footer.php";
 include "../../model/danhmuc_model.php";
 
 // Lấy danh sách danh mục từ model
-$categories = DanhMuc::getAllCategories();
+$categories = DanhMuc::getAll();
 $tong_bg = count($categories);
 ?>
 
