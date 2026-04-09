@@ -7,6 +7,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý vận chuyển</title>
+    <link rel="stylesheet" href="/QLShopDT_API/assets/css/vanchuyen.css">
 </head>
 <body>
     
@@ -22,6 +23,9 @@ session_start();
             echo "<p align='center'>Vui lòng <a href='../login.php'>đăng nhập</a> để xem thông tin vận chuyển</p>";
             exit();
         }
+
+        // Lấy username từ session
+        $username = $_SESSION['username'];
 
         mysqli_set_charset($conn, "utf8");
         

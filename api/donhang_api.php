@@ -7,12 +7,43 @@ include "db.php";
 $data = json_decode(file_get_contents("php://input"), true);
 $action = isset($data['action']) ? $data['action'] : '';
 
-// XEM TẤT CẢ ĐỔN HÀNG
+// XEM TẤT CẢ ĐƠN HÀNG
 if($action == 'getall') {
-    $sql = "SELECT dh.*, kh.tenkh, nv.tennv 
+    $sql = "SELECT dh.*, kh.tenkh, kh.diachi, kh.sdt, nv.tennv 
             FROM donhang dh 
             LEFT JOIN khachhang kh ON dh.makh = kh.makh 
             LEFT JOIN nhanvien nv ON dh.manv = nv.manv 
+            ORDER BY dh.madh DESC";
+    $result = $conn->query($sql);
+    
+    if($result) {
+        $orders = [];
+        while($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+        
+        echo json_encode([
+            "status" => true,
+            "message" => "Lấy danh sách đơn hàng thành công",
+            "data" => $orders,
+            "total" => count($orders)
+        ]);
+    } else {
+        echo json_encode([
+            "status" => false,
+            "message" => "Lỗi: " . $conn->error
+        ]);
+    }
+}
+
+// XEM ĐƠN HÀNG CỦA KHÁCH HÀNG
+else if($action == 'getbycustomer') {
+    $makh = $data['makh'];
+    $sql = "SELECT dh.*, kh.tenkh, kh.diachi, kh.sdt, nv.tennv 
+            FROM donhang dh 
+            LEFT JOIN khachhang kh ON dh.makh = kh.makh 
+            LEFT JOIN nhanvien nv ON dh.manv = nv.manv 
+            WHERE dh.makh = '$makh'
             ORDER BY dh.madh DESC";
     $result = $conn->query($sql);
     
@@ -52,7 +83,7 @@ else if($action == 'getone') {
         $order = $result->fetch_assoc();
         
         // Lấy chi tiết đơn hàng
-        $sql_detail = "SELECT ct.*, sp.tensp, sp.gia, sp.hinhanh 
+        $sql_detail = "SELECT ct.*, sp.tensp, sp.gia, sp.hinhanh, sp.hang
                        FROM chitietdonhang ct 
                        LEFT JOIN sanpham sp ON ct.masp = sp.masp 
                        WHERE ct.madh = '$madh'";
@@ -80,13 +111,44 @@ else if($action == 'getone') {
     }
 }
 
+// LẤY CHI TIẾT ĐƠN HÀNG
+else if($action == 'getchitiet') {
+    $madh = $data['madh'];
+    
+    $sql_detail = "SELECT ct.*, sp.tensp, sp.gia, sp.hinhanh, sp.hang
+                   FROM chitietdonhang ct 
+                   LEFT JOIN sanpham sp ON ct.masp = sp.masp 
+                   WHERE ct.madh = '$madh'";
+    $result_detail = $conn->query($sql_detail);
+    
+    $details = [];
+    if($result_detail) {
+        while($row = $result_detail->fetch_assoc()) {
+            $details[] = $row;
+        }
+    }
+    
+    echo json_encode([
+        "status" => true,
+        "message" => "Lấy chi tiết đơn hàng thành công",
+        "data" => $details
+    ]);
+}
+
 // TẠO ĐƠN HÀNG MỚI
 else if($action == 'add') {
-    $makh = $data['makh'];
-    $manv = $data['manv'];
-    $trigia = $data['trigia'];
+    $makh = $data['makh'] ?? null;
+    $manv = $data['manv'] ?? 0;
+    $trigia = $data['trigia'] ?? 0;
     $ngaydat = date('Y-m-d H:i:s');
-    $sanpham = $data['sanpham']; // Array các sản phẩm [{masp, sl}, ...]
+    
+    if (!$makh) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Thiếu mã khách hàng"
+        ]);
+        exit;
+    }
     
     // Thêm đơn hàng
     $sql = "INSERT INTO donhang (makh, ngaydat, manv, trigia) 
@@ -95,33 +157,11 @@ else if($action == 'add') {
     if($conn->query($sql)) {
         $madh = $conn->insert_id;
         
-        // Thêm chi tiết đơn hàng
-        $success = true;
-        foreach($sanpham as $sp) {
-            $masp = $sp['masp'];
-            $sl = $sp['sl'];
-            
-            $sql_detail = "INSERT INTO chitietdonhang (madh, masp, sl) 
-                          VALUES ('$madh', '$masp', '$sl')";
-            
-            if(!$conn->query($sql_detail)) {
-                $success = false;
-                break;
-            }
-        }
-        
-        if($success) {
-            echo json_encode([
-                "status" => true,
-                "message" => "Tạo đơn hàng thành công",
-                "madh" => $madh
-            ]);
-        } else {
-            echo json_encode([
-                "status" => false,
-                "message" => "Lỗi khi thêm chi tiết đơn hàng"
-            ]);
-        }
+        echo json_encode([
+            "status" => true,
+            "message" => "Tạo đơn hàng thành công",
+            "data" => ["madh" => $madh]
+        ]);
     } else {
         echo json_encode([
             "status" => false,
@@ -133,10 +173,20 @@ else if($action == 'add') {
 // CẬP NHẬT ĐƠN HÀNG
 else if($action == 'update') {
     $madh = $data['madh'];
-    $manv = isset($data['manv']) ? $data['manv'] : '';
-    $trigia = isset($data['trigia']) ? $data['trigia'] : '';
+    $trigia = $data['trigia'] ?? null;
     
-    $sql = "UPDATE donhang SET manv = '$manv', trigia = '$trigia' WHERE madh = '$madh'";
+    $updates = [];
+    if ($trigia !== null) $updates[] = "trigia = '$trigia'";
+    
+    if (empty($updates)) {
+        echo json_encode([
+            "status" => false,
+            "message" => "Không có dữ liệu để cập nhật"
+        ]);
+        exit;
+    }
+    
+    $sql = "UPDATE donhang SET " . implode(", ", $updates) . " WHERE madh = '$madh'";
     
     if($conn->query($sql)) {
         echo json_encode([
@@ -155,7 +205,11 @@ else if($action == 'update') {
 else if($action == 'delete') {
     $madh = $data['madh'];
     
-    // Xóa đơn hàng sẽ tự động xóa chi tiết (CASCADE)
+    // Xóa chi tiết đơn hàng trước
+    $sql_detail = "DELETE FROM chitietdonhang WHERE madh = '$madh'";
+    $conn->query($sql_detail);
+    
+    // Xóa đơn hàng
     $sql = "DELETE FROM donhang WHERE madh = '$madh'";
     
     if($conn->query($sql)) {
@@ -174,9 +228,7 @@ else if($action == 'delete') {
 else {
     echo json_encode([
         "status" => false,
-        "message" => "Action không hợp lệ"
+        "message" => "Action không được hỗ trợ"
     ]);
 }
-
-$conn->close();
 ?>

@@ -1,6 +1,47 @@
 <?php
 session_start();
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+include "../../includes/api_helper.php";
+include "../../model/donhang_model.php";
+
+$madh = $_GET['madh'] ?? $_POST['madh'] ?? 0;
+$thongbao = "";
+
+// Xử lý khi submit form (UPDATE)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Gọi API cập nhật đơn hàng
+    $result = callDonhangAPI([
+        "action"  => "update",
+        "madh"    => $madh,
+        "trigia"  => $_POST['num_trigia']
+    ]);
+
+    if ($result && $result['status']) {
+        header("Location: donhang.php");
+        exit();
+    } else {
+        $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
+    }
+}
+
+// Lấy thông tin đơn hàng hiện tại
+$result_dh = callDonhangAPI([
+    "action" => "getone",
+    "madh"   => $madh
+]);
+
+if (!($result_dh && $result_dh['status'])) {
+    echo "<p align='center' style='color:red;'>Không tìm thấy đơn hàng</p>";
+    echo "<p align='center'><a href='donhang.php'>Quay lại</a></p>";
+    exit();
+}
+$donhang = $result_dh['data'];
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,150 +51,40 @@ session_start();
 </head>
 <body>
     <h1 align="center">SỬA ĐƠN HÀNG</h1>
-    <h2 align="center">
-        <a href="donhang.php">Danh sách đơn hàng</a> | 
-        <a href="../trangchu.php">Trang chủ</a>
-    </h2>
-    
-    <?php
-        include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        if (!isset($_SESSION['username'])) {
-            echo "<p align='center'>Vui lòng <a href='../login.php'>đăng nhập</a></p>";
-            exit();
-        }
-        mysqli_set_charset($conn, "utf8");
-        
-        $role = $_SESSION['role'] ?? 0;
-        
-        if ($role == '0') {
-            echo "<p align='center'>Bạn không có quyền sửa đơn hàng!</p>";
-            echo "<p align='center'><a href='donhang.php'>Quay lại</a></p>";
-            exit();
-        }
 
-        $madh = isset($_REQUEST["madh"]) ? $_REQUEST["madh"] : "";
-        
-        if (empty($madh)) {
-            echo "<p align='center'>Không tìm thấy đơn hàng</p>";
-            exit();
-        }
+    <?php if ($thongbao): ?>
+        <p align="center" style="color:red;"><?php echo $thongbao; ?></p>
+    <?php endif; ?>
 
-        $sql_donhang = "SELECT dh.madh, dh.ngaydat, dh.trigia, dh.makh, dh.manv,
-                               kh.tenkh, kh.diachi, kh.sdt
-                        FROM donhang dh
-                        JOIN khachhang kh ON dh.makh = kh.makh
-                        WHERE dh.madh = '$madh'";
-        $result_donhang = mysqli_query($conn, $sql_donhang);
-        
-        if (!$result_donhang || mysqli_num_rows($result_donhang) == 0) {
-            echo "<p align='center'>Không tìm thấy đơn hàng</p>";
-            exit();
-        }
-        
-        $donhang = mysqli_fetch_object($result_donhang);
-        
-        $sql_nhanvien = "SELECT manv, tennv FROM nhanvien ORDER BY tennv";
-        $result_nhanvien = mysqli_query($conn, $sql_nhanvien);
-    ?>
-
-    <form method="POST" action="donhang_edit_save.php">
-        <input type="hidden" name="madh" value="<?php echo $donhang->madh; ?>">
-        
-        <table width="800" align="center" border="1">
+    <form method="post" action="donhang_edit.php?madh=<?php echo $madh; ?>">
+        <table align="center" border="1">
             <tr>
-                <td colspan="2"><strong>THÔNG TIN ĐƠN HÀNG</strong></td>
+                <td colspan="2" align="center">Thông tin đơn hàng</td>
             </tr>
             <tr>
-                <td width="200">Mã đơn hàng:</td>
-                <td><strong><?php echo $donhang->madh; ?></strong></td>
+                <td>Mã đơn hàng</td>
+                <td><?php echo htmlspecialchars($donhang['madh']); ?></td>
             </tr>
             <tr>
-                <td>Khách hàng:</td>
-                <td><?php echo $donhang->tenkh; ?></td>
+                <td>Tên khách hàng</td>
+                <td><?php echo htmlspecialchars($donhang['tenkh']); ?></td>
             </tr>
             <tr>
-                <td>Địa chỉ:</td>
-                <td><?php echo $donhang->diachi; ?></td>
+                <td>Ngày đặt</td>
+                <td><?php echo date('d/m/Y', strtotime($donhang['ngaydat'])); ?></td>
             </tr>
             <tr>
-                <td>Số điện thoại:</td>
-                <td><?php echo $donhang->sdt; ?></td>
-            </tr>
-            <tr>
-                <td>Ngày đặt:</td>
-                <td>
-                    <input type="date" name="ngaydat" value="<?php echo $donhang->ngaydat; ?>" required>
-                </td>
-            </tr>
-            <tr>
-                <td>Nhân viên xử lý:</td>
-                <td>
-                    <select name="manv" required>
-                        <option value="">-- Chọn nhân viên --</option>
-                        <?php while($nv = mysqli_fetch_object($result_nhanvien)): ?>
-                            <option value="<?php echo $nv->manv; ?>" 
-                                <?php echo ($nv->manv == $donhang->manv) ? 'selected' : ''; ?>>
-                                <?php echo $nv->tennv; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Tổng tiền:</td>
-                <td>
-                    <input type="number" name="trigia" value="<?php echo $donhang->trigia; ?>" 
-                           step="1000" min="0" required>
-                </td>
+                <td>Tổng tiền</td>
+                <td><input type="number" name="num_trigia" value="<?php echo $donhang['trigia']; ?>" min="0" required></td>
             </tr>
             <tr>
                 <td colspan="2" align="center">
-                    <input type="submit" value="Lưu">
-                    <a href="donhang.php">Hủy</a>
+                    <input type="hidden" name="madh" value="<?php echo $madh; ?>">
+                    <input type="submit" value="CẬP NHẬT">
+                    <input type="button" value="HỦY" onclick="window.location.href='donhang.php'">
                 </td>
             </tr>
         </table>
     </form>
-
-    <br>
-    <h3 align="center">Danh sách sản phẩm</h3>
-    
-    <?php
-        $sql_chitiet = "SELECT ctdh.masp, ctdh.sl,
-                               sp.tensp, sp.gia
-                        FROM chitietdonhang ctdh
-                        JOIN sanpham sp ON ctdh.masp = sp.masp
-                        WHERE ctdh.madh = '$madh'";
-        $result_chitiet = mysqli_query($conn, $sql_chitiet);
-    ?>
-
-    <table width="1000" align="center" border="1">
-        <tr>
-            <th>STT</th>
-            <th>Mã SP</th>
-            <th>Tên sản phẩm</th>
-            <th>Đơn giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-        </tr>
-        <?php
-        $stt = 0;
-        while($row = mysqli_fetch_object($result_chitiet)) {
-            $stt++;
-            $thanhtien = $row->gia * $row->sl;
-        ?>
-        <tr align="center">
-            <td><?php echo $stt; ?></td>
-            <td><?php echo $row->masp; ?></td>
-            <td><?php echo $row->tensp; ?></td>
-            <td><?php echo number_format($row->gia); ?> VNĐ</td>
-            <td><?php echo $row->sl; ?></td>
-            <td><?php echo number_format($thanhtien); ?> VNĐ</td>
-        </tr>
-        <?php } ?>
-    </table>
-
-    <?php mysqli_close($conn); ?>
 </body>
 </html>

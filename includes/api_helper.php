@@ -9,6 +9,7 @@ define('NHANVIEN_API_URL',   'http://localhost/QLShopDT_API/api/nhanvien_api.php
 define('PROFILE_API_URL',  'http://localhost/QLShopDT_API/api/profile_api.php');
 define('AUTH_API_URL',     'http://localhost/QLShopDT_API/api/auth_api.php');
 define('REGISTER_API_URL', 'http://localhost/QLShopDT_API/api/register_api.php');
+define('DONHANG_API_URL',  'http://localhost/QLShopDT_API/api/donhang_api.php');
 
 
 /**
@@ -61,6 +62,11 @@ function callNhanVienAPI($data) {
 
 function callGioHangAPI($data) {
     return callAPI(GIOHANG_API_URL, $data);
+}
+
+/** Gọi API đơn hàng */
+function callDonhangAPI($data) {
+    return callAPI(DONHANG_API_URL, $data);
 }
 
 /** Gọi API profile */
