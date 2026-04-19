@@ -8,7 +8,7 @@ define('GIOHANG_API_URL',   'http://localhost/QLShopDT_API/api/giohang_api.php')
 define('NHANVIEN_API_URL',   'http://localhost/QLShopDT_API/api/nhanvien_api.php');
 define('PROFILE_API_URL',  'http://localhost/QLShopDT_API/api/profile_api.php');
 define('THONGKE_API_URL', 'http://localhost/QLShopDT_API/api/thongke_api.php');
-
+define('NHANVIEN_REST_API_URL', 'http://localhost/dienthoai/QLShopDT_API/api/nhanvien_rest_api.php');
 
 /**
  * Hàm gọi API chung qua POST (JSON body)
@@ -72,9 +72,9 @@ function callSearchAPI($data) {
 function callNhanVienAPI($data) {
     return callAPI(NHANVIEN_API_URL, $data);
 }
-///////////** Gọi API nhân viên với method*/
+///////////** Gọi API nhân viên với các method  */
 function callNhanVienAPIMethod($data = [], $method = 'GET', $query = '') {
-    $url = NHANVIEN_API_URL . $query; 
+    $url =  NHANVIEN_REST_API_URL. $query;  
     return callAPIMethod($url, $data, $method);
 }
 
