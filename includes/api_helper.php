@@ -7,6 +7,7 @@ define('SEARCH_API_URL',   'http://localhost/QLShopDT_API/api/search_api.php');
 define('GIOHANG_API_URL',   'http://localhost/QLShopDT_API/api/giohang_api.php');
 define('NHANVIEN_API_URL',   'http://localhost/QLShopDT_API/api/nhanvien_api.php');
 define('PROFILE_API_URL',  'http://localhost/QLShopDT_API/api/profile_api.php');
+define('THONGKE_API_URL', 'http://localhost/QLShopDT_API/api/thongke_api.php');
 
 
 /**
@@ -24,6 +25,21 @@ function callAPI($url, $data) {
         ]
     ];
     $context  = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    return json_decode($response, true);
+}
+///////////////////call API chung sử dụng các method trong postman GET, POST, PUT, DELETE
+function callAPIMethod($url, $data = [], $method = 'POST') {
+    $options = [
+        "http" => [
+            "method" => $method,
+            "header" => "Content-Type: application/json",
+        ]
+    ];
+    if (in_array($method, ['POST', 'PUT']) && !empty($data)) {
+        $options['http']['content'] = json_encode($data);
+    }
+    $context = stream_context_create($options);
     $response = file_get_contents($url, false, $context);
     return json_decode($response, true);
 }
@@ -52,10 +68,21 @@ function callThongsoAPI($data) {
 function callSearchAPI($data) {
     return callAPI(SEARCH_API_URL, $data);
 }
-
+////////////** Gọi API nhân viên */
 function callNhanVienAPI($data) {
     return callAPI(NHANVIEN_API_URL, $data);
 }
+///////////** Gọi API nhân viên với method*/
+function callNhanVienAPIMethod($data = [], $method = 'GET', $query = '') {
+    $url = NHANVIEN_API_URL . $query; 
+    return callAPIMethod($url, $data, $method);
+}
+
+///////////////////thong ke
+function callThongKeAPI($data) {
+    return callAPI(THONGKE_API_URL, $data);
+}
+
 
 function callGioHangAPI($data) {
     return callAPI(GIOHANG_API_URL, $data);

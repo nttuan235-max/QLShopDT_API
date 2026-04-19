@@ -1,87 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm thông số</title>
-</head>
-<body>
-    <h1 align="center">THÊM THÔNG SỐ</h1>
+<?php
+header('Content-Type: application/json');
+include "db.php";
 
-    <?php
-    include "../../includes/api_helper.php";
+$raw = file_get_contents("php://input");
+$data = json_decode($raw, true);
+$action = isset($data['action']) ? $data['action'] : '';
 
-    // Lấy masp từ URL để pre-select và quay lại đúng trang
-    $masp_url = $_GET['masp'] ?? '';
-    $thongbao = "";
+if ($action == 'getthongke') {
+    $sql = "SELECT tt.*, dh.ngaydat, kh.tenkh, nv.tennv 
+            FROM thanhtoan tt
+            JOIN donhang dh ON tt.madh = dh.madh
+            JOIN khachhang kh ON dh.makh = kh.makh
+            JOIN nhanvien nv ON dh.manv = nv.manv
+            WHERE 1=1";
 
-    // Xử lý khi submit form
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $tents  = $_POST['txt_tents']  ?? '';
-        $masp   = $_POST['masp']       ?? '';
-        $giatri = $_POST['txt_giatri'] ?? '';
+    if (!empty($data['day']))
+        $sql .= " AND DAY(dh.ngaydat) = " . (int)$data['day'];
+    if (!empty($data['month']))
+        $sql .= " AND MONTH(dh.ngaydat) = " . (int)$data['month'];
+    if (!empty($data['year']))
+        $sql .= " AND YEAR(dh.ngaydat) = " . (int)$data['year'];
+    if (!empty($data['phuongThuc']) && $data['phuongThuc'] != 'Tất cả')
+        $sql .= " AND tt.phuongthuc = '" . $conn->real_escape_string($data['phuongThuc']) . "'";
+    if (!empty($data['trangThai']) && $data['trangThai'] != 'Tất cả')
+        $sql .= " AND tt.trangthai = '" . $conn->real_escape_string($data['trangThai']) . "'";
 
-        // Gọi API để thêm thông số
-        $result = callThongsoAPI([
-            "action" => "add",
-            "tents"  => $tents,
-            "masp"   => $masp,
-            "giatri" => $giatri
-        ]);
-
-        if ($result && $result['status']) {
-            header("Location: thongso.php?masp=$masp");
-            exit();
-        } else {
-            $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
-        }
+    $result = $conn->query($sql);
+    if ($result) {
+        $rows = [];
+        while ($row = $result->fetch_assoc()) $rows[] = $row;
+        echo json_encode(["status" => true, "data" => $rows, "total" => count($rows)]);
+    } else {
+        echo json_encode(["status" => false, "message" => $conn->error]);
     }
-
-    // Gọi API lấy danh sách sản phẩm cho dropdown
-    $spResult = callThongsoAPI(['action' => 'getsanpham']);
-    $sanphams = ($spResult && $spResult['status']) ? $spResult['data'] : [];
-    ?>
-
-    <?php if ($thongbao): ?>
-        <p align="center" style="color:red;"><?php echo $thongbao; ?></p>
-    <?php endif; ?>
-
-    <form method="POST" action="" enctype="multipart/form-data">
-        <table align="center" border="1">
-            <tr>
-                <td colspan="2" align="center">Thông tin thông số</td>
-            </tr>
-            <tr>
-                <td>Tên thông số</td>
-                <td><input type="text" name="txt_tents" required></td>
-            </tr>
-            <tr>
-                <td>Sản phẩm</td>
-                <td>
-                    <select name="masp">
-                        <option value="0">--Chọn sản phẩm--</option>
-                        <?php foreach ($sanphams as $sp): ?>
-                            <option value="<?php echo $sp['masp']; ?>"
-                                <?php echo ($sp['masp'] == $masp_url) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($sp['tensp']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Giá trị</td>
-                <td><input type="text" name="txt_giatri"></td>
-            </tr>
-            <tr>
-                <td colspan="2" align="center">
-                    <input type="submit" value="OK">
-                    <input type="reset"  value="Reset">
-                    <input type="button" value="Quay lại"
-                           onclick="window.location.href='thongso.php?masp=<?php echo $masp_url; ?>'">
-                </td>
-            </tr>
-        </table>
-    </form>
-</body>
-</html>
+} else {
+    echo json_encode(["status" => false, "message" => "Hành động không hợp lệ: " . $action]);
+}
