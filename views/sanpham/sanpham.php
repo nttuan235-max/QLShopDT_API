@@ -1,24 +1,20 @@
 <?php
 session_start();
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login.php");
-    exit();
-}
+include "../../includes/api_helper.php";
+requireLogin();
 
 $page_title = 'Quản lý Sản phẩm';
 $active_nav = 'sanpham';
 $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/footer.css">';
 include "../../includes/header.php";
-include "../../includes/api_helper.php";
 include "../../includes/footer.php";
 include "../../model/sanpham_model.php";
 
 // Lấy danh sách sản phẩm từ model
 $sanpham_list = SanPham::getAllProducts();
 
-// Lấy role từ session
-$role = isset($_SESSION['role']) ? (int)$_SESSION['role'] : -1;
-$can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
+// Lấy quyền chỉnh sửa
+$can_edit = isAdminOrStaff(); // Admin hoặc Nhân viên
 ?>
 <html>
     <link rel="stylesheet" href="/QLShopDT_API/assets/css/sanpham.css">
@@ -36,6 +32,7 @@ $can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
             <th>Hình ảnh</th>
             <th>Ghi chú</th>
             <th>Danh mục</th>
+            <th>Thông số</th>
             <?php if ($can_edit): ?>
                 <th width="180"><a href="sanpham_add.php">Thêm sản phẩm</a></th>
             <?php endif; ?>
@@ -43,7 +40,7 @@ $can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
         </tr>
 
         <?php if (empty($sanpham_list)): ?>
-            <tr><td colspan="<?php echo $can_edit ? '11' : '10'; ?>" align="center">Không có sản phẩm nào</td></tr>
+            <tr><td colspan="<?php echo $can_edit ? '12' : '11'; ?>" align="center">Không có sản phẩm nào</td></tr>
         <?php else: ?>
             <?php foreach ($sanpham_list as $i => $sp): ?>
                 <tr align="center">
@@ -56,6 +53,9 @@ $can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
                     <td><img src="/QLShopDT_API/includes/img/<?php echo htmlspecialchars($sp['hinhanh']); ?>" width="50"></td>
                     <td><?php echo htmlspecialchars($sp['ghichu']); ?></td>
                     <td><?php echo htmlspecialchars($sp['tendm']); ?></td>
+                    <td>
+                        <a href="../thongso/thongso.php?masp=<?php echo $sp['masp']; ?>">Xem thông số</a>
+                    </td>
                     <?php if ($can_edit): ?>
                         <td>
                             <a href="sanpham_edit.php?masp=<?php echo $sp['masp']; ?>">Sửa</a> |
@@ -71,7 +71,7 @@ $can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
         <?php endif; ?>
 
         <tr>
-            <td colspan="<?php echo $can_edit ? '11' : '10'; ?>" align="right">
+            <td colspan="<?php echo $can_edit ? '12' : '11'; ?>" align="right">
                 Bảng có <?php echo count($sanpham_list); ?> sản phẩm
             </td>
         </tr>

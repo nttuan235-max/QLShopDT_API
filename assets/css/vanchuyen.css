@@ -143,6 +143,7 @@ table {
             width: 100px;
             font-weight: 700;
             font-family: 'Courier New', monospace;
+            color: var(--dm-accent);
         }
 
         /* Mã đơn hàng */
@@ -151,6 +152,7 @@ table {
             width: 100px;
             font-family: 'Courier New', monospace;
             background-color: #f9f9f9;
+            color: var(--dm-text);
         }
 
             table td:nth-child(3) a {
@@ -187,6 +189,7 @@ table {
         table td:nth-child(6),
         table th:nth-child(6) {
             width: 100px;
+            color: var(--dm-text);
             font-family: 'Courier New', monospace;
         }
 

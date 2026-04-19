@@ -128,6 +128,7 @@ table th:nth-child(2) {
     font-weight: 700;
     font-family: 'Courier New', monospace;
     background-color: #f9f9f9;
+    color: var(--dm-text);
 }
 
 /* Tên khách hàng */
@@ -156,6 +157,7 @@ table td:nth-child(5),
 table th:nth-child(5) {
     width: 100px;
     font-family: 'Courier New', monospace;
+    color: var(--dm-text);
 }
 
 /* Ngày đặt */
