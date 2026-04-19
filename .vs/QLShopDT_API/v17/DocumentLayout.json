@@ -106,86 +106,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 13,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "chitietdonhang.css",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\chitietdonhang.css",
-              "RelativeDocumentMoniker": "assets\\css\\chitietdonhang.css",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\chitietdonhang.css",
-              "RelativeToolTip": "assets\\css\\chitietdonhang.css",
-              "ViewState": "AgIAADUBAAAAAAAAAAAwwHABAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T15:57:36.737Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "giohang.php",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\views\\giohang\\giohang.php",
-              "RelativeDocumentMoniker": "views\\giohang\\giohang.php",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\views\\giohang\\giohang.php",
-              "RelativeToolTip": "views\\giohang\\giohang.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABBAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:46:57.027Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "vanchuyen.css",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\vanchuyen.css",
-              "RelativeDocumentMoniker": "assets\\css\\vanchuyen.css",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\vanchuyen.css",
-              "RelativeToolTip": "assets\\css\\vanchuyen.css",
-              "ViewState": "AgIAAEMBAAAAAAAAAAAwwH4BAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T15:44:12.306Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "giohang.css",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\giohang.css",
-              "RelativeDocumentMoniker": "assets\\css\\giohang.css",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\giohang.css",
-              "RelativeToolTip": "assets\\css\\giohang.css",
-              "ViewState": "AgIAAOwBAAAAAAAAAAAwwCcCAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T15:43:17.671Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "donhang.css",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\donhang.css",
-              "RelativeDocumentMoniker": "assets\\css\\donhang.css",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\donhang.css",
-              "RelativeToolTip": "assets\\css\\donhang.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T15:42:41.924Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "giohang_api.php",
-              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\api\\giohang_api.php",
-              "RelativeDocumentMoniker": "api\\giohang_api.php",
-              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\api\\giohang_api.php",
-              "RelativeToolTip": "api\\giohang_api.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:40:10.46Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{e506b91c-c606-466a-90a9-123d1d1e12b3}"
@@ -207,6 +129,82 @@
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "chitietdonhang.css",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\chitietdonhang.css",
+              "RelativeDocumentMoniker": "assets\\css\\chitietdonhang.css",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\chitietdonhang.css",
+              "RelativeToolTip": "assets\\css\\chitietdonhang.css",
+              "ViewState": "AgIAADUBAAAAAAAAAAAwwHABAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-04-09T15:57:36.737Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "giohang.php",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\views\\giohang\\giohang.php",
+              "RelativeDocumentMoniker": "views\\giohang\\giohang.php",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\views\\giohang\\giohang.php",
+              "RelativeToolTip": "views\\giohang\\giohang.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-04-09T15:46:57.027Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "vanchuyen.css",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\vanchuyen.css",
+              "RelativeDocumentMoniker": "assets\\css\\vanchuyen.css",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\vanchuyen.css",
+              "RelativeToolTip": "assets\\css\\vanchuyen.css",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAwwH4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-04-09T15:44:12.306Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "giohang.css",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\giohang.css",
+              "RelativeDocumentMoniker": "assets\\css\\giohang.css",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\giohang.css",
+              "RelativeToolTip": "assets\\css\\giohang.css",
+              "ViewState": "AgIAAOwBAAAAAAAAAAAwwCcCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-04-09T15:43:17.671Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "donhang.css",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\donhang.css",
+              "RelativeDocumentMoniker": "assets\\css\\donhang.css",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\assets\\css\\donhang.css",
+              "RelativeToolTip": "assets\\css\\donhang.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEsBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-04-09T15:42:41.924Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "giohang_api.php",
+              "DocumentMoniker": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\api\\giohang_api.php",
+              "RelativeDocumentMoniker": "api\\giohang_api.php",
+              "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\api\\giohang_api.php",
+              "RelativeToolTip": "api\\giohang_api.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-04-09T15:40:10.46Z"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 8,
               "Title": "chitietsanpham.css",
@@ -216,8 +214,7 @@
               "RelativeToolTip": "assets\\css\\chitietsanpham.css",
               "ViewState": "AgIAAG4BAAAAAAAAAAAwwJABAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T15:02:34.011Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:02:34.011Z"
             },
             {
               "$type": "Document",
@@ -227,7 +224,7 @@
               "RelativeDocumentMoniker": "views\\donhang\\donhang_chitiet.php",
               "ToolTip": "C:\\Download\\Xampp\\htdocs\\QLShopDT_API\\views\\donhang\\donhang_chitiet.php",
               "RelativeToolTip": "views\\donhang\\donhang_chitiet.php",
-              "ViewState": "AgIAADkAAAAAAAAAAAAAADQAAABDAAAAAAAAAA==",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAFkAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2026-04-09T15:33:55.965Z",
               "EditorCaption": ""
@@ -242,8 +239,7 @@
               "RelativeToolTip": "includes\\api_helper.php",
               "ViewState": "AgIAADMAAAAAAAAAAAAjwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:38:27.386Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:38:27.386Z"
             },
             {
               "$type": "Document",
@@ -255,8 +251,7 @@
               "RelativeToolTip": "views\\vanchuyen\\vanchuyen.php",
               "ViewState": "AgIAAFMAAAAAAAAAAAAwwHgAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T14:58:20.45Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:58:20.45Z"
             },
             {
               "$type": "Document",
@@ -268,8 +263,7 @@
               "RelativeToolTip": "views\\donhang\\donhang.php",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:25:58.521Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:25:58.521Z"
             },
             {
               "$type": "Document",
@@ -281,8 +275,7 @@
               "RelativeToolTip": "model\\donhang_model.php",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:31:27.593Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:31:27.593Z"
             },
             {
               "$type": "Document",
@@ -294,8 +287,7 @@
               "RelativeToolTip": "views\\donhang\\donhang_create.php",
               "ViewState": "AgIAABkAAAAAAAAAAADwv0cAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:34:29.359Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:34:29.359Z"
             },
             {
               "$type": "Document",
@@ -307,8 +299,7 @@
               "RelativeToolTip": "views\\donhang\\donhang_edit.php",
               "ViewState": "AgIAACIAAAAAAAAAAADwv0gAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:34:34.252Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:34:34.252Z"
             },
             {
               "$type": "Document",
@@ -320,8 +311,7 @@
               "RelativeToolTip": "api\\donhang_api.php",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:25:55.758Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:25:55.758Z"
             },
             {
               "$type": "Document",
@@ -333,8 +323,7 @@
               "RelativeToolTip": "views\\donhang\\donhang_del.php",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:34:51.265Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:34:51.265Z"
             },
             {
               "$type": "Document",
@@ -346,8 +335,7 @@
               "RelativeToolTip": "views\\sanpham\\sanpham.php",
               "ViewState": "AgIAAB0AAAAAAAAAAAAjwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:16:48.86Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:16:48.86Z"
             },
             {
               "$type": "Document",
@@ -359,8 +347,7 @@
               "RelativeToolTip": "views\\sanpham\\chitietsanpham.php",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAAC4AAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T15:03:21.454Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T15:03:21.454Z"
             },
             {
               "$type": "Document",
@@ -372,8 +359,7 @@
               "RelativeToolTip": "views\\danhmuc\\danhmuc.php",
               "ViewState": "AgIAAB4AAAAAAAAAAAAjwEAAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T14:57:59.375Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:57:59.375Z"
             },
             {
               "$type": "Document",
@@ -385,8 +371,7 @@
               "RelativeToolTip": "includes\\header.php",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-09T14:54:59.865Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:54:59.865Z"
             },
             {
               "$type": "Document",
@@ -398,8 +383,7 @@
               "RelativeToolTip": "assets\\css\\footer.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T14:24:25.153Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:24:25.153Z"
             },
             {
               "$type": "Document",
@@ -411,8 +395,7 @@
               "RelativeToolTip": "assets\\css\\main.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T14:24:24.218Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:24:24.218Z"
             },
             {
               "$type": "Document",
@@ -424,8 +407,7 @@
               "RelativeToolTip": "assets\\css\\register.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T14:24:23.648Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:24:23.648Z"
             },
             {
               "$type": "Document",
@@ -437,8 +419,7 @@
               "RelativeToolTip": "assets\\css\\trangchu.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T14:24:22.604Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-09T14:24:22.604Z"
             }
           ]
         }
