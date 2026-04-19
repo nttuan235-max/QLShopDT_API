@@ -8,11 +8,7 @@ if (!isset($_SESSION['username'])) {
 // Lấy thông tin role từ header (đã xử lý trong header.php)
 include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
 
-$username = $_SESSION['username'];
-$sql_role = "SELECT role FROM taikhoan WHERE tentk = '$username'";
-$result_role = mysqli_query($conn, $sql_role);
-$row_role = mysqli_fetch_assoc($result_role);
-$role = $row_role['role'];
+$role = $_SESSION['role'] ?? 0;
 
 // Chỉ Admin mới có quyền quản lý nhân viên
 if ($role != 1) {
@@ -26,11 +22,10 @@ $page_title = 'Quản lý Nhân viên';
 $active_nav = 'nhanvien';
 include "../../includes/header.php";
 include "../../includes/footer.php";
+include "../../model/nhanvien_model.php";
 
-// Lấy danh sách nhân viên
-$sql_select = "SELECT * FROM `nhanvien`";
-$result = mysqli_query($conn, $sql_select);
-$employees = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// Lấy danh sách nhân viên từ model
+$employees = NhanVien::getAllEmployees();
 $tong_bg = count($employees);
 ?>
 <html>

@@ -10,12 +10,8 @@
 
     <?php
     session_start();
-    if (!isset($_SESSION['username'])) {
-        header("Location: ../login.php");
-        exit();
-    }
-
     include "../../includes/api_helper.php";
+    requireLogin();
     // Lấy danh sách danh mục qua API
     $result_dm = callDanhmucAPI(['action' => 'getall']);
     $danhmucs  = ($result_dm && $result_dm['status']) ? $result_dm['data'] : [];

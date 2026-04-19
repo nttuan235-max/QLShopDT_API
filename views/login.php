@@ -1,15 +1,10 @@
 <?php
 session_start();
 
-// Nếu đã đăng nhập rồi thì chuyển về trang chủ
-if (isset($_SESSION['username'])) {
-    header("Location: trangchu.php");
-    exit();
-}
-
 $page_title = 'Đăng nhập';
 $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/login.css">';
 
+require_once "../includes/api_helper.php";
 include "../includes/header.php";
 
 $error = "";
@@ -21,19 +16,19 @@ if (isset($_SESSION['username'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
-    
-    $sql = "SELECT * FROM taikhoan WHERE tentk = '$username' AND mk = '$password'";
-    $result = mysqli_query($conn, $sql);
-    
-    if ($row = mysqli_fetch_assoc($result)) {
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = $row['role'];
+
+    $authResponse = callAuthAPI($username, $password);
+
+    if (!empty($authResponse['status'])) {
+        $_SESSION['username'] = $authResponse['user']['tentk'];
+        $_SESSION['userid']   = $authResponse['user']['matk'];
+        $_SESSION['role']     = $authResponse['user']['role'];
         header("Location: trangchu.php");
         exit();
     } else {
-        $error = "Tên đăng nhập hoặc mật khẩu không đúng!";
+        $error = $authResponse['message'] ?? "Tên đăng nhập hoặc mật khẩu không đúng!";
     }
 }
 ?>

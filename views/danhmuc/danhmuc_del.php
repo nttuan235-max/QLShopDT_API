@@ -5,12 +5,9 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-include "../../includes/api_helper.php";
+include "../../model/danhmuc_model.php";
 
-$result = callDanhmucAPI([
-    "action" => "delete",
-    "madm" => $_GET['madm'] ?? 0
-]);
+$result = DanhMuc::delete($_GET['madm'] ?? 0);
 
 if ($result && $result['status']) {
     header("Location: danhmuc.php");

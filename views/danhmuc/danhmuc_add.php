@@ -9,21 +9,18 @@ $page_title = 'Thêm danh mục';
 $active_nav = 'danhmuc';
 $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/danhmuc.css">';
 include "../../includes/header.php";
-include "../../includes/api_helper.php";
+include "../../model/danhmuc_model.php";
 
 $thongbao = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = callDanhmucAPI([
-        "action" => "add",
-        "tendm" => $_POST['txt_tendm'] ?? ''
-    ]);
+    $result = DanhMuc::add($_POST['txt_tendm'] ?? '');
     
     if ($result && $result['status']) {
         header("Location: danhmuc.php");
         exit();
     }
-    $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
+    $thongbao = $result['message'] ?? 'Lỗi không xác định';
 }
 ?>
 

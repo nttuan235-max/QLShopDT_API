@@ -4,8 +4,15 @@ define('SANPHAM_API_URL',  'http://localhost/QLShopDT_API/api/sanpham_api.php');
 define('KHACHHANG_API_URL','http://localhost/QLShopDT_API/api/khachhang_api.php');
 define('THONGSO_API_URL',  'http://localhost/QLShopDT_API/api/thongso_api.php');
 define('SEARCH_API_URL',   'http://localhost/QLShopDT_API/api/search_api.php');
-define('NHANVIEN_API_URL', 'http://localhost/QLShopDT_API/api/nhanvien_api.php');
-define('THONGKE_API_URL', 'http://localhost/QLShopDT_API/api/thongke_api.php');
+define('GIOHANG_API_URL',   'http://localhost/QLShopDT_API/api/giohang_api.php');
+define('NHANVIEN_API_URL',   'http://localhost/QLShopDT_API/api/nhanvien_api.php');
+define('PROFILE_API_URL',  'http://localhost/QLShopDT_API/api/profile_api.php');
+define('AUTH_API_URL',     'http://localhost/QLShopDT_API/api/auth_api.php');
+define('REGISTER_API_URL', 'http://localhost/QLShopDT_API/api/register_api.php');
+define('DONHANG_API_URL',  'http://localhost/QLShopDT_API/api/donhang_api.php');
+define('VANCHUYEN_API_URL','http://localhost/QLShopDT_API/api/vanchuyen_api.php');
+
+
 /**
  * Hàm gọi API chung qua POST (JSON body)
  * @param string $url  - Endpoint API
@@ -49,13 +56,54 @@ function callThongsoAPI($data) {
 function callSearchAPI($data) {
     return callAPI(SEARCH_API_URL, $data);
 }
-/////////////////////////////////////////////// NHÂN VIÊN /////////////////////////////////////////////////////
-/** Gọi API nhân viên */
-function callNhanvienAPI($data) {
+
+function callNhanVienAPI($data) {
     return callAPI(NHANVIEN_API_URL, $data);
 }
-/////////////////////////////////////////// THỐNG KÊ /////////////////////////////////////////////////////
-function callThongkeAPI($data) {
-    return callAPI(THONGKE_API_URL, $data);
+
+function callGioHangAPI($data) {
+    return callAPI(GIOHANG_API_URL, $data);
+}
+
+/** Gọi API đơn hàng */
+function callDonhangAPI($data) {
+    return callAPI(DONHANG_API_URL, $data);
+}
+
+/** Gọi API vận chuyển */
+function callVanchuyenAPI($data) {
+    return callAPI(VANCHUYEN_API_URL, $data);
+}
+
+/** Gọi API profile */
+function callProfileAPI($data) {
+    return callAPI(PROFILE_API_URL, $data);
+}
+
+function getCurrentRole() {
+    return isset($_SESSION['role']) ? (int)$_SESSION['role'] : null;
+}
+
+function isAdminOrStaff() {
+    $role = getCurrentRole();
+    return $role === 1 || $role === 2;
+}
+
+function requireLogin() {
+    if (!isset($_SESSION['username'])) {
+        header('Location: /QLShopDT_API/views/login.php');
+        exit();
+    }
+}
+
+function callAuthAPI($username, $password) {
+    return callAPI(AUTH_API_URL, [
+        'username' => $username,
+        'password' => $password
+    ]);
+}
+
+function callRegisterAPI($data) {
+    return callAPI(REGISTER_API_URL, $data);
 }
 ?>
