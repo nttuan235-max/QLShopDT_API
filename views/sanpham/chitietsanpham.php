@@ -101,7 +101,7 @@ $matk = $_SESSION['matk'] ?? 0;
                 <br>
 
                 <!-- Form thêm vào giỏ hàng -->
-                <form method="post" action="../giohang/giohang_insert.php?txt_masp=<?php echo $masp; ?>">
+                <form method="post" action="/QLShopDT_API/controller/giohang/giohang_insert.php">
                     <input type="hidden" name="masp" value="<?php echo $masp; ?>">
                     <table border="0">
                         <tr>
