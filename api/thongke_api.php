@@ -32,7 +32,7 @@ switch ($method) {
         } else {
             echo json_encode(["status" => false, "message" => $conn->error]);
         }
-        break;
+       
 
     default:
         http_response_code(405);
