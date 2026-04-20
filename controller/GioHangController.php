@@ -13,185 +13,319 @@ class GioHangController extends Controller {
         require_once BASE_PATH . '/model/SanPham.php';
         $this->gioHangModel = new GioHang();
     }
-    
+
     /**
-     * Hiển thị giỏ hàng
+     * Trang giỏ hàng (web view)
      */
     public function index() {
         $this->requireLogin();
-        
+
         $role = $_SESSION['role'] ?? 0;
         $username = $_SESSION['username'];
-        
-        if ($role == 0) {
-            // Khách hàng - hiển thị giỏ hàng của họ
+
+        if ((int)$role === 0) {
             $makh = $this->gioHangModel->findCustomerByUsername($username);
-            
+
             if (!$makh) {
                 $this->view('giohang/index', [
                     'error' => 'Không tìm thấy thông tin khách hàng',
                     'page_title' => 'Giỏ hàng',
+                    'active_nav' => 'giohang',
                     'items' => [],
-                    'total' => 0
+                    'total' => 0,
+                    'role' => (int)$role,
                 ]);
                 return;
             }
-            
+
             $items = $this->gioHangModel->getByCustomer($makh);
             $total = $this->gioHangModel->getCartTotal($makh);
         } else {
-            // Admin/Nhân viên - hiển thị tất cả giỏ hàng
-            $items = $this->gioHangModel->getAllItems();
-            $total = 0;
-            foreach ($items as $item) {
-                $total += $item['thanhtien'];
-            }
+            $items = $this->gioHangModel->getAllItemsWithCustomer();
+            $total = array_sum(array_column($items ?: [], 'thanhtien'));
         }
-        
+
         $this->view('giohang/index', [
             'items' => $items,
             'total' => $total,
-            'role' => $role,
+            'role' => (int)$role,
             'page_title' => 'Giỏ hàng',
-            'active_nav' => 'giohang'
+            'active_nav' => 'giohang',
         ]);
     }
     
+    // ===================== RESTful API Methods =====================
+
     /**
-     * Thêm sản phẩm vào giỏ
+     * GET /api/giohang
+     * Role 0: giỏ hàng của chính khách hàng
+     * Role 1/2: tất cả giỏ hàng
      */
-    public function add() {
-        $this->requireLogin();
-        
-        // Chỉ khách hàng mới được thêm vào giỏ
-        if ($_SESSION['role'] != 0) {
-            $this->json(['success' => false, 'message' => 'Chỉ khách hàng mới có thể thêm vào giỏ'], 403);
+    public function apiGet() {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['username'])) {
+            http_response_code(401);
+            echo json_encode(['status' => false, 'message' => 'Chưa đăng nhập'], JSON_UNESCAPED_UNICODE);
             return;
         }
-        
-        $masp = $this->input('masp');
-        $quantity = (int)($this->input('soluong') ?: 1);
-        
-        if (!$masp) {
-            $this->setFlash('error', 'Thiếu thông tin sản phẩm');
-            $this->redirect('/views/giohang.php');
-            return;
-        }
-        
-        $username = $_SESSION['username'];
-        $makh = $this->gioHangModel->findCustomerByUsername($username);
-        
-        if (!$makh) {
-            $this->setFlash('error', 'Không tìm thấy thông tin khách hàng');
-            $this->redirect('/views/giohang.php');
-            return;
-        }
-        
-        $result = $this->gioHangModel->addToCart($makh, $masp, $quantity);
-        
-        if ($result['success']) {
-            $this->setFlash('success', $result['message']);
+
+        $role = (int)($_SESSION['role'] ?? 0);
+
+        if ($role === 0) {
+            $makh = $this->gioHangModel->findCustomerByUsername($_SESSION['username']);
+            if (!$makh) {
+                echo json_encode(['status' => true, 'data' => [], 'total' => 0], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            $items = $this->gioHangModel->getByCustomer($makh);
+            $total = $this->gioHangModel->getCartTotal($makh);
         } else {
-            $this->setFlash('error', $result['message']);
+            $items = $this->gioHangModel->getAllItems();
+            $total = array_sum(array_column($items ?: [], 'thanhtien'));
         }
-        
-        // Redirect về trang trước đó hoặc giỏ hàng
-        $referer = $_SERVER['HTTP_REFERER'] ?? BASE_URL . '/views/giohang.php';
-        header('Location: ' . $referer);
-        exit();
+
+        echo json_encode([
+            'status' => true,
+            'data'   => $items ?: [],
+            'total'  => $total,
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * POST /api/giohang
+     * Body: masp, sl
+     * Chỉ dành cho khách hàng (role 0)
+     */
+    public function apiAdd() {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['username']) || (int)($_SESSION['role'] ?? -1) !== 0) {
+            http_response_code(403);
+            echo json_encode(['status' => false, 'message' => 'Chỉ khách hàng mới có thể thêm vào giỏ'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+        $masp  = (int)($input['masp'] ?? 0);
+        $sl    = (int)($input['sl']   ?? 1);
+
+        if ($masp <= 0) {
+            http_response_code(400);
+            echo json_encode(['status' => false, 'message' => 'Mã sản phẩm không hợp lệ'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $makh = $this->gioHangModel->findCustomerByUsername($_SESSION['username']);
+        if (!$makh) {
+            http_response_code(400);
+            echo json_encode(['status' => false, 'message' => 'Không tìm thấy thông tin khách hàng'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $result = $this->gioHangModel->addToCart($makh, $masp, $sl);
+        if ($result['success']) {
+            echo json_encode(['status' => true, 'message' => $result['message']], JSON_UNESCAPED_UNICODE);
+        } else {
+            http_response_code(400);
+            echo json_encode(['status' => false, 'message' => $result['message']], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    /**
+     * PUT /api/giohang/{masp}
+     * Body: sl (số lượng mới; 0 = xóa)
+     * Chỉ dành cho khách hàng (role 0)
+     */
+    public function apiUpdate($masp) {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['username']) || (int)($_SESSION['role'] ?? -1) !== 0) {
+            http_response_code(403);
+            echo json_encode(['status' => false, 'message' => 'Không có quyền'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $sl    = (int)($input['sl'] ?? 0);
+        $masp  = (int)$masp;
+
+        $makh  = $this->gioHangModel->findCustomerByUsername($_SESSION['username']);
+        $magio = $this->gioHangModel->getCartId($makh);
+
+        if (!$magio) {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Không tìm thấy giỏ hàng'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        if ($sl <= 0) {
+            $ok  = $this->gioHangModel->removeItem($magio, $masp);
+            $msg = 'Đã xóa sản phẩm khỏi giỏ hàng';
+        } else {
+            $sanPhamModel = new SanPham();
+            $stock = $sanPhamModel->getStock($masp);
+            if ($sl > $stock) {
+                http_response_code(400);
+                echo json_encode(['status' => false, 'message' => "Số lượng vượt quá tồn kho (còn $stock)"], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            $ok  = $this->gioHangModel->updateItemQuantity($magio, $masp, $sl);
+            $msg = 'Cập nhật số lượng thành công';
+        }
+
+        echo json_encode(['status' => $ok !== false, 'message' => $ok !== false ? $msg : 'Cập nhật thất bại'], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * DELETE /api/giohang/{masp}
+     * Xóa 1 sản phẩm khỏi giỏ
+     */
+    public function apiRemove($masp) {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['username']) || (int)($_SESSION['role'] ?? -1) !== 0) {
+            http_response_code(403);
+            echo json_encode(['status' => false, 'message' => 'Không có quyền'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $masp  = (int)$masp;
+        $makh  = $this->gioHangModel->findCustomerByUsername($_SESSION['username']);
+        $magio = $this->gioHangModel->getCartId($makh);
+
+        if (!$magio) {
+            http_response_code(404);
+            echo json_encode(['status' => false, 'message' => 'Không tìm thấy giỏ hàng'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $ok = $this->gioHangModel->removeItem($magio, $masp);
+        echo json_encode(['status' => $ok !== false, 'message' => $ok !== false ? 'Đã xóa sản phẩm' : 'Xóa thất bại'], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * DELETE /api/giohang
+     * Xóa toàn bộ giỏ hàng
+     */
+    public function apiClear() {
+        header('Content-Type: application/json');
+        if (!isset($_SESSION['username']) || (int)($_SESSION['role'] ?? -1) !== 0) {
+            http_response_code(403);
+            echo json_encode(['status' => false, 'message' => 'Không có quyền'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $makh  = $this->gioHangModel->findCustomerByUsername($_SESSION['username']);
+        $magio = $this->gioHangModel->getCartId($makh);
+
+        if (!$magio) {
+            echo json_encode(['status' => true, 'message' => 'Giỏ hàng đã trống'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $ok = $this->gioHangModel->clearCart($magio);
+        echo json_encode(['status' => $ok !== false, 'message' => $ok !== false ? 'Đã xóa toàn bộ giỏ hàng' : 'Xóa thất bại'], JSON_UNESCAPED_UNICODE);
     }
     
     /**
-     * Cập nhật số lượng sản phẩm
+     * POST /giohang/update
+     * Xử lý form update số lượng từ view
      */
     public function update() {
         $this->requireLogin();
         
-        if ($_SESSION['role'] != 0) {
-            $this->json(['success' => false, 'message' => 'Không có quyền'], 403);
+        $role = (int)($_SESSION['role'] ?? 0);
+        if ($role !== 0) {
+            $this->setFlash('error', 'Chỉ khách hàng mới có thể cập nhật giỏ hàng');
+            $this->redirect('/giohang');
             return;
         }
         
-        $masp = $this->input('masp');
-        $newQuantity = (int)$this->input('soluong');
+        $masp = (int)($this->input('masp') ?? 0);
+        $soluong = (int)($this->input('soluong') ?? 0);
         
-        $username = $_SESSION['username'];
+        if ($masp <= 0 || $soluong < 0) {
+            $this->setFlash('error', 'Dữ liệu không hợp lệ');
+            $this->redirect('/giohang');
+            return;
+        }
+        
+        $username = $_SESSION['username'] ?? '';
         $makh = $this->gioHangModel->findCustomerByUsername($username);
+        
+        if (!$makh) {
+            $this->setFlash('error', 'Không tìm thấy thông tin khách hàng');
+            $this->redirect('/giohang');
+            return;
+        }
+        
         $magio = $this->gioHangModel->getCartId($makh);
-        
         if (!$magio) {
-            $this->setFlash('error', 'Không tìm thấy giỏ hàng');
-            $this->redirect('/views/giohang.php');
+            $this->setFlash('error', 'Giỏ hàng không tồn tại');
+            $this->redirect('/giohang');
             return;
         }
         
-        // Kiểm tra tồn kho
-        $sanPhamModel = new SanPham();
-        $stock = $sanPhamModel->getStock($masp);
-        
-        if ($newQuantity > $stock) {
-            $this->setFlash('error', "Số lượng vượt quá tồn kho (còn $stock sản phẩm)");
-            $this->redirect('/views/giohang.php');
-            return;
-        }
-        
-        if ($newQuantity <= 0) {
-            // Xóa sản phẩm khỏi giỏ
+        if ($soluong == 0) {
+            // Xóa sản phẩm nếu số lượng = 0
             $this->gioHangModel->removeItem($magio, $masp);
             $this->setFlash('success', 'Đã xóa sản phẩm khỏi giỏ hàng');
         } else {
-            $this->gioHangModel->updateItemQuantity($magio, $masp, $newQuantity);
+            // Kiểm tra tồn kho
+            $sanPhamModel = new SanPham();
+            $stock = $sanPhamModel->getStock($masp);
+            
+            if ($soluong > $stock) {
+                $this->setFlash('error', "Số lượng vượt quá tồn kho (còn $stock)");
+                $this->redirect('/giohang');
+                return;
+            }
+            
+            // Cập nhật số lượng
+            $this->gioHangModel->updateItemQuantity($magio, $masp, $soluong);
             $this->setFlash('success', 'Cập nhật số lượng thành công');
         }
         
-        $this->redirect('/views/giohang.php');
+        $this->redirect('/giohang');
     }
     
     /**
-     * Xóa sản phẩm khỏi giỏ
+     * GET /giohang/remove/{masp}
+     * Xóa sản phẩm khỏi giỏ hàng
      */
-    public function remove() {
+    public function remove($masp) {
         $this->requireLogin();
         
-        if ($_SESSION['role'] != 0) {
-            $this->json(['success' => false, 'message' => 'Không có quyền'], 403);
+        $role = (int)($_SESSION['role'] ?? 0);
+        if ($role !== 0) {
+            $this->setFlash('error', 'Chỉ khách hàng mới có thể xóa khỏi giỏ hàng');
+            $this->redirect('/giohang');
             return;
         }
         
-        $masp = $this->input('masp');
-        
-        $username = $_SESSION['username'];
-        $makh = $this->gioHangModel->findCustomerByUsername($username);
-        $magio = $this->gioHangModel->getCartId($makh);
-        
-        if ($magio) {
-            $this->gioHangModel->removeItem($magio, $masp);
-            $this->setFlash('success', 'Đã xóa sản phẩm khỏi giỏ hàng');
-        }
-        
-        $this->redirect('/views/giohang.php');
-    }
-    
-    /**
-     * Xóa toàn bộ giỏ hàng
-     */
-    public function clear() {
-        $this->requireLogin();
-        
-        if ($_SESSION['role'] != 0) {
-            $this->json(['success' => false, 'message' => 'Không có quyền'], 403);
+        $masp = (int)$masp;
+        if ($masp <= 0) {
+            $this->setFlash('error', 'Mã sản phẩm không hợp lệ');
+            $this->redirect('/giohang');
             return;
         }
         
-        $username = $_SESSION['username'];
+        $username = $_SESSION['username'] ?? '';
         $makh = $this->gioHangModel->findCustomerByUsername($username);
-        $magio = $this->gioHangModel->getCartId($makh);
         
-        if ($magio) {
-            $this->gioHangModel->clearCart($magio);
-            $this->setFlash('success', 'Đã xóa toàn bộ giỏ hàng');
+        if (!$makh) {
+            $this->setFlash('error', 'Không tìm thấy thông tin khách hàng');
+            $this->redirect('/giohang');
+            return;
         }
         
-        $this->redirect('/views/giohang.php');
+        $magio = $this->gioHangModel->getCartId($makh);
+        if (!$magio) {
+            $this->setFlash('error', 'Giỏ hàng không tồn tại');
+            $this->redirect('/giohang');
+            return;
+        }
+        
+        // Xóa sản phẩm
+        $this->gioHangModel->removeItem($magio, $masp);
+        $this->setFlash('success', 'Đã xóa sản phẩm khỏi giỏ hàng');
+        $this->redirect('/giohang');
     }
 }

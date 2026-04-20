@@ -26,332 +26,149 @@ class DonHangController extends Controller {
         $this->gioHangModel = new GioHang();
     }
     
+    // ===================== Web Methods =====================
+
     /**
-     * Danh sách đơn hàng
-     */
-    public function index() {
-        $this->requireLogin();
-        
-        $role = $_SESSION['role'] ?? 0;
-        $userid = $_SESSION['userid'] ?? 0;
-        
-        // Admin/Nhân viên xem tất cả, khách hàng chỉ xem của mình
-        if ($role == 0) {
-            $orders = $this->donHangModel->getByCustomer($userid);
-        } else {
-            $orders = $this->donHangModel->getAllWithDetails();
-        }
-        
-        $canEdit = in_array($role, [1, 2]);
-        
-        $this->view('donhang/index', [
-            'page_title' => 'Quản lý Đơn hàng',
-            'active_nav' => 'donhang',
-            'orders' => $orders,
-            'role' => $role,
-            'canEdit' => $canEdit,
-            'success' => $this->getFlash('success'),
-            'error' => $this->getFlash('error')
-        ]);
-    }
-    
-    /**
-     * Chi tiết đơn hàng
-     */
-    public function show($madh) {
-        $this->requireLogin();
-        
-        $role = $_SESSION['role'] ?? 0;
-        $userid = $_SESSION['userid'] ?? 0;
-        
-        $order = $this->donHangModel->getOneWithDetails($madh);
-        
-        if (!$order) {
-            $this->setFlash('error', 'Không tìm thấy đơn hàng');
-            $this->redirect('/donhang');
-            return;
-        }
-        
-        // Khách hàng chỉ xem được đơn của mình
-        if ($role == 0 && $order['makh'] != $userid) {
-            $this->error403('Bạn không có quyền xem đơn hàng này');
-            return;
-        }
-        
-        // Lấy chi tiết sản phẩm trong đơn
-        $orderDetails = $this->donHangModel->getOrderDetails($madh);
-        
-        $this->view('donhang/detail', [
-            'page_title' => 'Chi tiết Đơn hàng #' . $madh,
-            'active_nav' => 'donhang',
-            'order' => $order,
-            'orderDetails' => $orderDetails,
-            'role' => $role
-        ]);
-    }
-    
-    /**
-     * Form tạo đơn hàng mới (từ giỏ hàng)
+     * GET /donhang/create — Trang xác nhận đặt hàng (chỉ khách hàng role=0)
      */
     public function create() {
         $this->requireLogin();
-        
-        $userid = $_SESSION['userid'] ?? 0;
-        
-        // Lấy giỏ hàng
-        $cartItems = $this->gioHangModel->getByCustomer($userid);
-        
-        if (empty($cartItems)) {
-            $this->setFlash('error', 'Giỏ hàng trống, không thể tạo đơn hàng');
+
+        $role     = (int)($_SESSION['role']     ?? -1);
+        $username = $_SESSION['username']        ?? '';
+        $userid   = (int)($_SESSION['userid']   ?? 0);
+
+        if ($role !== 0) {
+            $this->error403('Chỉ khách hàng mới có thể đặt hàng qua giỏ hàng');
+            return;
+        }
+
+        $makh  = $this->gioHangModel->findCustomerByUsername($username);
+        $items = $makh ? $this->gioHangModel->getByCustomer($makh) : [];
+
+        if (empty($items)) {
+            $this->setFlash('error', 'Giỏ hàng trống, không thể đặt hàng');
             $this->redirect('/giohang');
             return;
         }
-        
-        // Tính tổng tiền
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item['soluong'] * $item['gia'];
-        }
-        
-        // Lấy thông tin khách hàng
-        $customer = $this->khachHangModel->findById($userid);
-        
-        $this->view('donhang/create', [
-            'page_title' => 'Đặt hàng',
+
+        $total    = array_sum(array_column($items, 'thanhtien'));
+        $customer = $this->khachHangModel->findById($makh);
+
+        $this->view('donhang/checkout', [
+            'page_title' => 'Xác nhận đặt hàng',
             'active_nav' => 'giohang',
-            'cartItems' => $cartItems,
-            'total' => $total,
-            'customer' => $customer
+            'items'      => $items,
+            'total'      => $total,
+            'customer'   => $customer,
+            'makh'       => $makh,
         ]);
     }
-    
+
     /**
-     * Xử lý tạo đơn hàng
+     * POST /donhang/create — Xử lý đặt hàng từ giỏ hàng
      */
-    public function store() {
+    public function placeOrder() {
         $this->requireLogin();
-        $this->verifyCsrf();
-        
-        $userid = $_SESSION['userid'] ?? 0;
-        $role = $_SESSION['role'] ?? 0;
-        
-        // Lấy giỏ hàng
-        $cartItems = $this->gioHangModel->getByCustomer($userid);
-        
-        if (empty($cartItems)) {
+
+        $role     = (int)($_SESSION['role']   ?? -1);
+        $username = $_SESSION['username']      ?? '';
+
+        if ($role !== 0) {
+            $this->error403('Chỉ khách hàng mới có thể đặt hàng qua giỏ hàng');
+            return;
+        }
+
+        $makh  = $this->gioHangModel->findCustomerByUsername($username);
+        $items = $makh ? $this->gioHangModel->getByCustomer($makh) : [];
+
+        if (empty($items)) {
             $this->setFlash('error', 'Giỏ hàng trống');
             $this->redirect('/giohang');
             return;
         }
-        
-        // Tính tổng tiền
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item['soluong'] * $item['gia'];
-        }
-        
-        // Tạo đơn hàng
-        $manv = ($role != 0) ? $userid : null;
-        $madh = $this->donHangModel->createOrder($userid, $total, $manv);
-        
+
+        $total = array_sum(array_column($items, 'thanhtien'));
+        $madh  = $this->donHangModel->createOrder($makh, $total);
+
         if (!$madh) {
-            $this->setFlash('error', 'Tạo đơn hàng thất bại');
-            $this->redirect('/giohang');
+            $this->setFlash('error', 'Tạo đơn hàng thất bại, vui lòng thử lại');
+            $this->redirect('/donhang/create');
             return;
         }
-        
-        // Thêm chi tiết đơn hàng
-        foreach ($cartItems as $item) {
-            $this->donHangModel->addOrderDetail($madh, $item['masp'], $item['soluong'], $item['gia']);
-            
-            // Giảm số lượng tồn kho
-            $this->sanPhamModel->updateStock($item['masp'], -$item['soluong']);
+
+        // Thêm chi tiết từng sản phẩm
+        foreach ($items as $item) {
+            $this->donHangModel->addOrderDetail($madh, (int)$item['masp'], (int)$item['sl']);
         }
-        
+
         // Xóa giỏ hàng
-        $this->gioHangModel->clearCart($userid);
-        
+        $magio = $this->gioHangModel->getCartId($makh);
+        if ($magio) {
+            $this->gioHangModel->clearCart($magio);
+        }
+
         $this->setFlash('success', 'Đặt hàng thành công! Mã đơn hàng: #' . $madh);
-        $this->redirect('/donhang/detail/' . $madh);
+        $this->redirect('/giohang');
     }
-    
+
     /**
-     * Form chỉnh sửa đơn hàng (chỉ admin/nhân viên)
+     * GET /donhang/detail/{madh} — Xem chi tiết đơn hàng
      */
-    public function edit($madh) {
-        $this->requireRole([1, 2]);
-        
-        $order = $this->donHangModel->getOneWithDetails($madh);
-        
-        if (!$order) {
-            $this->setFlash('error', 'Không tìm thấy đơn hàng');
-            $this->redirect('/donhang');
-            return;
-        }
-        
-        $orderDetails = $this->donHangModel->getOrderDetails($madh);
-        $customers = $this->khachHangModel->getAll();
-        $employees = $this->nhanVienModel->getAll();
-        
-        // Trạng thái có thể chọn
-        $statuses = ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao', 'Đã giao', 'Đã hủy'];
-        
-        $this->view('donhang/edit', [
-            'page_title' => 'Sửa Đơn hàng #' . $madh,
-            'active_nav' => 'donhang',
-            'order' => $order,
-            'orderDetails' => $orderDetails,
-            'customers' => $customers,
-            'employees' => $employees,
-            'statuses' => $statuses
-        ]);
+    public function show($madh) {
+        $this->requireLogin();
+        header('Location: ' . BASE_URL . '/views/donhang/donhang_chitiet.php?madh=' . (int)$madh);
+        exit();
     }
-    
+
     /**
-     * Xử lý cập nhật đơn hàng
-     */
-    public function update() {
-        $this->requireRole([1, 2]);
-        $this->verifyCsrf();
-        
-        $madh = $this->input('madh');
-        $trangthai = $this->input('trangthai');
-        $manv = $this->input('manv');
-        
-        $order = $this->donHangModel->getOneWithDetails($madh);
-        
-        if (!$order) {
-            $this->setFlash('error', 'Không tìm thấy đơn hàng');
-            $this->redirect('/donhang');
-            return;
-        }
-        
-        // Cập nhật trạng thái
-        $result = $this->donHangModel->updateStatus($madh, $trangthai);
-        
-        // Cập nhật nhân viên xử lý nếu có
-        if ($manv) {
-            $this->db->execute("UPDATE donhang SET manv = ? WHERE madh = ?", 'ii', [$manv, $madh]);
-        }
-        
-        if ($result) {
-            $this->setFlash('success', 'Cập nhật đơn hàng thành công');
-        } else {
-            $this->setFlash('error', 'Cập nhật đơn hàng thất bại');
-        }
-        
-        $this->redirect('/donhang');
-    }
-    
-    /**
-     * Cập nhật nhanh trạng thái (AJAX)
-     */
-    public function updateStatus() {
-        $this->requireRole([1, 2]);
-        
-        $madh = $this->input('madh');
-        $trangthai = $this->input('trangthai');
-        
-        if (!$madh || !$trangthai) {
-            $this->json(['success' => false, 'message' => 'Thiếu thông tin'], 400);
-            return;
-        }
-        
-        $result = $this->donHangModel->updateStatus($madh, $trangthai);
-        
-        if ($result) {
-            $this->json(['success' => true, 'message' => 'Cập nhật thành công']);
-        } else {
-            $this->json(['success' => false, 'message' => 'Cập nhật thất bại'], 500);
-        }
-    }
-    
-    /**
-     * Xóa đơn hàng
-     */
-    public function delete($madh) {
-        $this->requireRole([1, 2]);
-        
-        $order = $this->donHangModel->getOneWithDetails($madh);
-        
-        if (!$order) {
-            $this->setFlash('error', 'Không tìm thấy đơn hàng');
-            $this->redirect('/donhang');
-            return;
-        }
-        
-        // Chỉ xóa được đơn chưa giao
-        if ($order['trangthai'] == 'Đã giao') {
-            $this->setFlash('error', 'Không thể xóa đơn hàng đã giao');
-            $this->redirect('/donhang');
-            return;
-        }
-        
-        // Hoàn lại số lượng tồn kho nếu đơn bị hủy
-        if ($order['trangthai'] != 'Đã hủy') {
-            $orderDetails = $this->donHangModel->getOrderDetails($madh);
-            foreach ($orderDetails as $item) {
-                $this->sanPhamModel->updateStock($item['masp'], $item['soluong']);
-            }
-        }
-        
-        $result = $this->donHangModel->deleteOrder($madh);
-        
-        if ($result) {
-            $this->setFlash('success', 'Xóa đơn hàng thành công');
-        } else {
-            $this->setFlash('error', 'Xóa đơn hàng thất bại');
-        }
-        
-        $this->redirect('/donhang');
-    }
-    
-    /**
-     * Hủy đơn hàng (khách hàng)
+     * POST /donhang/{madh}/cancel — Khách hàng hủy đơn hàng của mình
+     * Chỉ được hủy khi trạng thái là "Chờ xác nhận"
      */
     public function cancel($madh) {
         $this->requireLogin();
-        
-        $role = $_SESSION['role'] ?? 0;
-        $userid = $_SESSION['userid'] ?? 0;
-        
-        $order = $this->donHangModel->getOneWithDetails($madh);
-        
-        if (!$order) {
-            $this->setFlash('error', 'Không tìm thấy đơn hàng');
-            $this->redirect('/donhang');
+
+        $role     = (int)($_SESSION['role']   ?? -1);
+        $username = $_SESSION['username']      ?? '';
+
+        if ($role !== 0) {
+            $this->error403('Chỉ khách hàng mới có thể hủy đơn hàng');
             return;
         }
-        
-        // Kiểm tra quyền
-        if ($role == 0 && $order['makh'] != $userid) {
+
+        $madh = (int)$madh;
+        $order = $this->donHangModel->getOneWithDetails($madh);
+
+        $donhangUrl = BASE_URL . '/views/donhang/donhang.php';
+
+        if (!$order) {
+            $this->setFlash('error', 'Không tìm thấy đơn hàng #' . $madh);
+            header('Location: ' . $donhangUrl);
+            exit();
+        }
+
+        // Kiểm tra đơn hàng có thuộc về khách hàng này không
+        $makh = $this->gioHangModel->findCustomerByUsername($username);
+        if (!$makh || (int)$order['makh'] !== (int)$makh) {
             $this->error403('Bạn không có quyền hủy đơn hàng này');
             return;
         }
-        
-        // Chỉ hủy được đơn chờ xác nhận
-        if ($order['trangthai'] != 'Chờ xác nhận') {
-            $this->setFlash('error', 'Chỉ có thể hủy đơn hàng đang chờ xác nhận');
-            $this->redirect('/donhang/detail/' . $madh);
-            return;
+
+        // Kiểm tra trạng thái
+        if ($order['trangthai'] !== 'Chờ xác nhận') {
+            $this->setFlash('error', 'Chỉ có thể hủy đơn hàng ở trạng thái "Chờ xác nhận"');
+            header('Location: ' . $donhangUrl);
+            exit();
         }
-        
-        // Hoàn lại số lượng tồn kho
-        $orderDetails = $this->donHangModel->getOrderDetails($madh);
-        foreach ($orderDetails as $item) {
-            $this->sanPhamModel->updateStock($item['masp'], $item['soluong']);
-        }
-        
-        // Cập nhật trạng thái
-        $result = $this->donHangModel->updateStatus($madh, 'Đã hủy');
-        
+
+        $result = $this->donHangModel->cancelOrder($madh);
         if ($result) {
-            $this->setFlash('success', 'Hủy đơn hàng thành công');
+            $this->setFlash('success', 'Đã hủy đơn hàng #' . $madh . ' thành công');
         } else {
-            $this->setFlash('error', 'Hủy đơn hàng thất bại');
+            $this->setFlash('error', 'Hủy đơn hàng thất bại, vui lòng thử lại');
         }
-        
-        $this->redirect('/donhang');
+        header('Location: ' . $donhangUrl);
+        exit();
     }
 
     // ===================== RESTful API Methods =====================
@@ -419,18 +236,25 @@ class DonHangController extends Controller {
     public function apiUpdate($id) {
         header('Content-Type: application/json');
         $input = json_decode(file_get_contents('php://input'), true) ?: [];
-        $ok = false;
+        $updated = false;
+        $failed  = false;
+
         if (isset($input['trigia'])) {
-            $ok = $this->donHangModel->updateTrigia($id, $input['trigia']);
+            $r = $this->donHangModel->updateTrigia($id, $input['trigia']);
+            if ($r === false) $failed = true;
+            else $updated = true;
         }
         if (isset($input['trangthai'])) {
-            $ok = $this->donHangModel->updateStatus($id, $input['trangthai']);
+            $r = $this->donHangModel->updateStatus($id, $input['trangthai']);
+            if ($r === false) $failed = true;
+            else $updated = true;
         }
-        if ($ok) {
-            echo json_encode(['status' => true, 'message' => 'Cập nhật thành công']);
-        } else {
+
+        if ($failed) {
             http_response_code(500);
-            echo json_encode(['status' => false, 'message' => 'Cập nhật thất bại']);
+            echo json_encode(['status' => false, 'message' => 'Cập nhật thất bại'], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['status' => true, 'message' => 'Cập nhật thành công'], JSON_UNESCAPED_UNICODE);
         }
     }
 
