@@ -1,37 +1,43 @@
 <?php
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 include "db.php";
 
-$data = json_decode(file_get_contents("php://input"), true);
-$action = isset($data['action']) ? $data['action'] : '';
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($action == 'getthongke') {
-    $sql = "SELECT tt.*, dh.ngaydat, kh.tenkh, nv.tennv 
-            FROM thanhtoan tt
-            JOIN donhang dh ON tt.madh = dh.madh
-            JOIN khachhang kh ON dh.makh = kh.makh
-            JOIN nhanvien nv ON dh.manv = nv.manv
-            WHERE 1=1";
+switch ($method) {
+    case 'GET':
+        $sql = "SELECT tt.*, dh.ngaydat, kh.tenkh, nv.tennv 
+                FROM thanhtoan tt
+                JOIN donhang dh ON tt.madh = dh.madh
+                JOIN khachhang kh ON dh.makh = kh.makh
+                JOIN nhanvien nv ON dh.manv = nv.manv
+                WHERE 1=1";
 
-    if (!empty($data['day']))
-        $sql .= " AND DAY(dh.ngaydat) = '" . (int)$data['day'] . "'";
-    if (!empty($data['month']))
-        $sql .= " AND MONTH(dh.ngaydat) = '" . (int)$data['month'] . "'";
-    if (!empty($data['year']))
-        $sql .= " AND YEAR(dh.ngaydat) = '" . (int)$data['year'] . "'";
-    if (!empty($data['phuongThuc']) && $data['phuongThuc'] != 'Tất cả')
-        $sql .= " AND tt.phuongthuc = '" . $conn->real_escape_string($data['phuongThuc']) . "'";
-    if (!empty($data['trangThai']) && $data['trangThai'] != 'Tất cả')
-        $sql .= " AND tt.trangthai = '" . $conn->real_escape_string($data['trangThai']) . "'";
+        if (!empty($_GET['day']))
+            $sql .= " AND DAY(dh.ngaydat) = " . (int)$_GET['day'];
+        if (!empty($_GET['month']))
+            $sql .= " AND MONTH(dh.ngaydat) = " . (int)$_GET['month'];
+        if (!empty($_GET['year']))
+            $sql .= " AND YEAR(dh.ngaydat) = " . (int)$_GET['year'];
+        if (!empty($_GET['phuongThuc']) && $_GET['phuongThuc'] != 'Tất cả')
+            $sql .= " AND tt.phuongthuc = '" . $conn->real_escape_string($_GET['phuongThuc']) . "'";
+        if (!empty($_GET['trangThai']) && $_GET['trangThai'] != 'Tất cả')
+            $sql .= " AND tt.trangthai = '" . $conn->real_escape_string($_GET['trangThai']) . "'";
 
-    $result = $conn->query($sql);
-    if ($result) {
-        $rows = [];
-        while ($row = $result->fetch_assoc()) $rows[] = $row;
-        echo json_encode(["status" => true, "data" => $rows, "total" => count($rows)]);
-    } else {
-        echo json_encode(["status" => false, "message" => $conn->error]);
-    }
-} else {
-    echo json_encode(["status" => false, "message" => "Hành động không hợp lệ"]);
+        $result = $conn->query($sql);
+        if ($result) {
+            $rows = [];
+            while ($row = $result->fetch_assoc()) $rows[] = $row;
+            echo json_encode(["status" => true, "data" => $rows, "total" => count($rows)]);
+        } else {
+            echo json_encode(["status" => false, "message" => $conn->error]);
+        }
+        break;
+
+    default:
+        http_response_code(405);
+        echo json_encode(["status" => false, "message" => "Method không hỗ trợ"]);
+        break;
 }
+$conn->close();
+?>

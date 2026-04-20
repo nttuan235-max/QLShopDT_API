@@ -8,7 +8,8 @@ define('GIOHANG_API_URL',   'http://localhost/QLShopDT_API/api/giohang_api.php')
 define('NHANVIEN_API_URL',   'http://localhost/QLShopDT_API/api/nhanvien_api.php');
 define('PROFILE_API_URL',  'http://localhost/QLShopDT_API/api/profile_api.php');
 define('THONGKE_API_URL', 'http://localhost/QLShopDT_API/api/thongke_api.php');
-define('NHANVIEN_REST_API_URL', 'http://localhost/dienthoai/QLShopDT_API/api/nhanvien_rest_api.php');
+
+define('NHANVIEN_REST_API_URL', 'http://localhost/QLShopDT_API/api/nhanvien_rest_api.php');
 
 /**
  * Hàm gọi API chung qua POST (JSON body)
@@ -79,10 +80,10 @@ function callNhanVienAPIMethod($data = [], $method = 'GET', $query = '') {
 }
 
 ///////////////////thong ke
-function callThongKeAPI($data) {
-    return callAPI(THONGKE_API_URL, $data);
+function callThongKeAPI($filters = []) {
+    $query = !empty($filters) ? '?' . http_build_query($filters) : '';
+    return callAPIMethod(THONGKE_API_URL . $query, [], 'GET');
 }
-
 
 function callGioHangAPI($data) {
     return callAPI(GIOHANG_API_URL, $data);
