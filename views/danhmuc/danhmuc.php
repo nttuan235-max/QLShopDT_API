@@ -13,8 +13,12 @@ include "../../includes/footer.php";
 include "../../model/danhmuc_model.php";
 
 // Lấy danh sách danh mục từ model
-$categories = DanhMuc::getAll();
+$categories = DanhMuc::getAllCategories();
 $tong_bg = count($categories);
+
+// Lấy role từ session
+$role = isset($_SESSION['role']) ? (int)$_SESSION['role'] : -1;
+$can_edit = ($role === 1 || $role === 2); // Admin hoặc Nhân viên
 ?>
 
 <html>
@@ -28,7 +32,9 @@ $tong_bg = count($categories);
             <th>STT</th>
             <th>Mã danh mục</th>
             <th>Tên danh mục</th>
-            <th><a href="danhmuc_add.php">Thêm danh mục</a></th>
+            <?php if ($can_edit): ?>
+                <th><a href="danhmuc_add.php">Thêm danh mục</a></th>
+            <?php endif; ?>
         </tr>
     </thead>
     <tbody>
@@ -41,18 +47,20 @@ $tong_bg = count($categories);
                 <td><?php echo $stt; ?></td>
                 <td><?php echo htmlspecialchars($dm['madm']); ?></td>
                 <td><?php echo htmlspecialchars($dm['tendm']); ?></td>
-                <td> 
-                    <a href="danhmuc_edit.php?madm=<?php echo $dm['madm']; ?>">Sửa</a>
-                    <a href="danhmuc_del.php?madm=<?php echo $dm['madm']; ?>" 
-                       onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
-                </td>
+                <?php if ($can_edit): ?>
+                    <td> 
+                        <a href="danhmuc_edit.php?madm=<?php echo $dm['madm']; ?>">Sửa</a>
+                        <a href="danhmuc_del.php?madm=<?php echo $dm['madm']; ?>" 
+                           onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">Xóa</a>
+                    </td>
+                <?php endif; ?>
             </tr>
         <?php
             }
         } else {
         ?>
             <tr>
-                <td colspan="4" class="dm-empty-state">
+                <td colspan="<?php echo $can_edit ? '4' : '3'; ?>" class="dm-empty-state">
                     <strong>Chưa có danh mục nào</strong>
                     <p>Hãy thêm danh mục đầu tiên của bạn</p>
                 </td>
@@ -63,7 +71,7 @@ $tong_bg = count($categories);
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="4">Tổng số: <strong><?php echo $tong_bg; ?></strong> danh mục</td>
+            <td colspan="<?php echo $can_edit ? '4' : '3'; ?>">Tổng số: <strong><?php echo $tong_bg; ?></strong> danh mục</td>
         </tr>
     </tfoot>
 </table>

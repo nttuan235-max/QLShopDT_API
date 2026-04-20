@@ -1,0 +1,425 @@
+﻿/* ═══════════════════════════════════════════════════════════════════════ */
+/* CHI TIẾT SẢN PHẨM - PRODUCT DETAIL STYLES */
+/* ═══════════════════════════════════════════════════════════════════════ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* CONTAINER & LAYOUT */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-detail-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.product-detail-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.product-detail-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* MAIN CONTENT AREA */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-detail-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 40px;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* PRODUCT IMAGE SECTION */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-image-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.product-image-section img {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.product-image-section img:hover {
+    transform: scale(1.05);
+}
+
+.product-no-image {
+    width: 100%;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    color: #999;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* PRODUCT INFO SECTION */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-info-section h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.product-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.product-info-table tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.product-info-table td {
+    padding: 14px 0;
+    vertical-align: middle;
+}
+
+.product-info-table td:first-child {
+    font-weight: 600;
+    color: #555;
+    width: 35%;
+    padding-right: 20px;
+}
+
+.product-info-table td:last-child {
+    color: #333;
+    font-size: 15px;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* PRICE HIGHLIGHT */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.product-price .label {
+    font-weight: 600;
+    color: #555;
+}
+
+.product-price .price-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e74c3c;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* WARRANTY & STOCK INFO */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.product-warranty,
+.product-stock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f0f4ff;
+    border-left: 4px solid #667eea;
+    margin: 12px 0;
+    border-radius: 4px;
+}
+
+.product-warranty .label,
+.product-stock .label {
+    font-weight: 600;
+    color: #333;
+}
+
+.product-warranty .value,
+.product-stock .value {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.product-stock.low-stock {
+    background-color: #fff3cd;
+    border-left-color: #ffc107;
+}
+
+.product-stock.low-stock .value {
+    color: #ff6b6b;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* ADD TO CART SECTION */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.add-to-cart-section {
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+}
+
+.add-to-cart-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.quantity-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.quantity-input-group label {
+    font-weight: 600;
+    color: #555;
+    min-width: 80px;
+}
+
+.quantity-input-group input[type="number"] {
+    width: 100px;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.quantity-input-group input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* SPECIFICATIONS SECTION */
+/* ────────────────────────────────────────────────────────────────────── */
+
+.specifications-section {
+    margin-top: 40px;
+    padding: 40px;
+    background-color: #f9f9f9;
+    border-top: 2px solid #e0e0e0;
+}
+
+.specifications-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #667eea;
+    display: inline-block;
+}
+
+.specifications-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.specifications-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+.specifications-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.specifications-table tr:last-child td {
+    border-bottom: none;
+}
+
+.specifications-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.specifications-table tr:hover {
+    background-color: #f0f4ff;
+}
+
+.specifications-table td:first-child {
+    font-weight: 600;
+    color: #555;
+    width: 30%;
+    background-color: #f5f5f5;
+}
+
+.specifications-empty {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-style: italic;
+    background-color: white;
+    border-radius: 6px;
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* RESPONSIVE DESIGN */
+/* ────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .product-detail-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 20px;
+    }
+
+    .product-detail-header h1 {
+        font-size: 22px;
+    }
+
+    .product-info-section h2 {
+        font-size: 20px;
+    }
+
+    .product-price .price-value {
+        font-size: 24px;
+    }
+
+    .specifications-section {
+        padding: 20px;
+    }
+
+    .specifications-section h2 {
+        font-size: 18px;
+    }
+
+    .quantity-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .add-to-cart-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-detail-container {
+        margin: 15px;
+    }
+
+    .product-detail-content {
+        padding: 15px;
+    }
+
+    .product-image-section {
+        padding: 15px;
+    }
+
+    .product-detail-header h1 {
+        font-size: 18px;
+    }
+
+    .product-info-table td {
+        padding: 10px 0;
+        font-size: 13px;
+    }
+
+    .product-info-table td:first-child {
+        width: 40%;
+    }
+
+    .specifications-table th,
+    .specifications-table td {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .product-price .price-value {
+        font-size: 20px;
+    }
+}

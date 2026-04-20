@@ -5,8 +5,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-include "../../includes/header.php";
-include "../../includes/api_helper.php";
+require "../../includes/api_helper.php";
 
 $masp = isset($_REQUEST['masp']) ? $_REQUEST['masp'] : 0;
 
@@ -29,7 +28,7 @@ $result_ts = callThongsoAPI([
 ]);
 $thongsos = ($result_ts && $result_ts['status']) ? $result_ts['data'] : [];
 
-// Lấy matk từ session (không cần query DB nữa nếu session đã lưu)
+// Lấy matk từ session
 $matk = $_SESSION['matk'] ?? 0;
 ?>
 <!DOCTYPE html>
@@ -39,32 +38,38 @@ $matk = $_SESSION['matk'] ?? 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết sản phẩm - <?php echo htmlspecialchars($sp['tensp']); ?></title>
     <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/chitietsanpham.css">
 </head>
 <body>
+    <?php 
+    include "../../includes/header.php";
+    ?>
     <br>
-    <h1 align="center">CHI TIẾT SẢN PHẨM</h1>
+    <div class="product-detail-container">
+        <!-- Header -->
+        <div class="product-detail-header">
+            <h1>Chi tiết sản phẩm</h1>
+        </div>
 
-    <table width="1200" align="center" border="1" cellpadding="10">
-        <tr>
-            <!-- Hình ảnh sản phẩm -->
-            <td width="400" align="center" valign="top">
+        <!-- Main Content -->
+        <div class="product-detail-content">
+            <!-- Product Image Section -->
+            <div class="product-image-section">
                 <?php if (!empty($sp['hinhanh'])): ?>
-                    <img src="/QLShopDT_API/includes/img/<?php echo htmlspecialchars($sp['hinhanh']); ?>">
-                         alt="<?php echo htmlspecialchars($sp['tensp']); ?>"
-                         width="350">
+                    <img src="/QLShopDT_API/includes/img/<?php echo htmlspecialchars($sp['hinhanh']); ?>" 
+                         alt="<?php echo htmlspecialchars($sp['tensp']); ?>">
                 <?php else: ?>
-                    <p>Không có hình ảnh</p>
+                    <div class="product-no-image">
+                        <p>Không có hình ảnh</p>
+                    </div>
                 <?php endif; ?>
-            </td>
+            </div>
 
-            <!-- Thông tin sản phẩm -->
-            <td valign="top">
+            <!-- Product Info Section -->
+            <div class="product-info-section">
                 <h2><?php echo htmlspecialchars($sp['tensp']); ?></h2>
 
-                <table width="100%" border="0">
-                    <tr>
-                        <th colspan="2">Thông tin sản phẩm</th>
-                    </tr>
+                <table class="product-info-table">
                     <tr>
                         <td><strong>Danh mục:</strong></td>
                         <td><?php echo htmlspecialchars($sp['tendm']); ?></td>
@@ -96,7 +101,7 @@ $matk = $_SESSION['matk'] ?? 0;
                 <br>
 
                 <!-- Form thêm vào giỏ hàng -->
-                <form method="post" action="../giohang/giohang_insert.php?txt_masp=<?php echo $masp; ?>">
+                <form method="post" action="/QLShopDT_API/controller/giohang/giohang_insert.php">
                     <input type="hidden" name="masp" value="<?php echo $masp; ?>">
                     <table border="0">
                         <tr>
@@ -114,8 +119,8 @@ $matk = $_SESSION['matk'] ?? 0;
                         </tr>
                     </table>
                 </form>
-            </td>
-        </tr>
+            </div>
+        </div>
 
         <!-- Thông số kỹ thuật -->
         <tr>
@@ -141,6 +146,7 @@ $matk = $_SESSION['matk'] ?? 0;
                 </table>
             </td>
         </tr>
-    </table>
+    </div>
+    <?php include __DIR__ . "/../../includes/footer.php"; ?>
 </body>
 </html>

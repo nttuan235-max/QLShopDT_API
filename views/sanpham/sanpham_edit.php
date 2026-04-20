@@ -10,12 +10,8 @@
 
     <?php
     session_start();
-    if (!isset($_SESSION['username'])) {
-        header("Location: ../login.php");
-        exit();
-    }
-
     include "../../includes/api_helper.php";
+    requireLogin();
 
     $masp     = $_GET['masp'] ?? $_POST['masp'] ?? 0;
     $thongbao = "";

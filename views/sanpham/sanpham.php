@@ -1,20 +1,20 @@
 <?php
 session_start();
-if (!isset($_SESSION['username'])) {
-    header("Location: ../login.php");
-    exit();
-}
+include "../../includes/api_helper.php";
+requireLogin();
 
 $page_title = 'Quản lý Sản phẩm';
 $active_nav = 'sanpham';
 $extra_css = '<link rel="stylesheet" href="/QLShopDT_API/assets/css/footer.css">';
 include "../../includes/header.php";
-include "../../includes/api_helper.php";
 include "../../includes/footer.php";
 include "../../model/sanpham_model.php";
 
 // Lấy danh sách sản phẩm từ model
 $sanpham_list = SanPham::getAllProducts();
+
+// Lấy quyền chỉnh sửa
+$can_edit = isAdminOrStaff(); // Admin hoặc Nhân viên
 ?>
 <html>
     <link rel="stylesheet" href="/QLShopDT_API/assets/css/sanpham.css">
@@ -32,12 +32,15 @@ $sanpham_list = SanPham::getAllProducts();
             <th>Hình ảnh</th>
             <th>Ghi chú</th>
             <th>Danh mục</th>
-            <th width="180"><a href="sanpham_add.php">Thêm sản phẩm</a></th>
-            <th>Thông số sản phẩm</th>
+            <th>Thông số</th>
+            <?php if ($can_edit): ?>
+                <th width="180"><a href="sanpham_add.php">Thêm sản phẩm</a></th>
+            <?php endif; ?>
+            <th>Chi tiết sản phẩm</th>
         </tr>
 
         <?php if (empty($sanpham_list)): ?>
-            <tr><td colspan="11" align="center">Không có sản phẩm nào</td></tr>
+            <tr><td colspan="<?php echo $can_edit ? '12' : '11'; ?>" align="center">Không có sản phẩm nào</td></tr>
         <?php else: ?>
             <?php foreach ($sanpham_list as $i => $sp): ?>
                 <tr align="center">
@@ -51,19 +54,24 @@ $sanpham_list = SanPham::getAllProducts();
                     <td><?php echo htmlspecialchars($sp['ghichu']); ?></td>
                     <td><?php echo htmlspecialchars($sp['tendm']); ?></td>
                     <td>
-                        <a href="sanpham_edit.php?masp=<?php echo $sp['masp']; ?>">Sửa</a> |
-                        <a href="sanpham_del.php?masp=<?php echo $sp['masp']; ?>"
-                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
-                    </td>
-                    <td>
                         <a href="../thongso/thongso.php?masp=<?php echo $sp['masp']; ?>">Xem thông số</a>
+                    </td>
+                    <?php if ($can_edit): ?>
+                        <td>
+                            <a href="sanpham_edit.php?masp=<?php echo $sp['masp']; ?>">Sửa</a> |
+                            <a href="sanpham_del.php?masp=<?php echo $sp['masp']; ?>"
+                               onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">Xóa</a>
+                        </td>
+                    <?php endif; ?>
+                    <td>
+                        <a href="chitietsanpham.php?masp=<?php echo $sp['masp']; ?>">Xem chi tiết</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>
 
         <tr>
-            <td colspan="11" align="right">
+            <td colspan="<?php echo $can_edit ? '12' : '11'; ?>" align="right">
                 Bảng có <?php echo count($sanpham_list); ?> sản phẩm
             </td>
         </tr>

@@ -1,0 +1,368 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+/* ===== BIẾN MÀU (kế thừa từ sanpham) ===== */
+:root {
+    --dm-primary: #1a1a2e;
+    --dm-accent: #e94560;
+    --dm-accent2: #f5a623;
+    --dm-surface: #f8f7f4;
+    --dm-card: #ffffff;
+    --dm-text: #1a1a2e;
+    --dm-muted: #7a7a8a;
+    --dm-border: rgba(0,0,0,0.08);
+    --dm-success: #10b981;
+    --dm-radius: 10px;
+    --dm-shadow: 0 8px 28px rgba(0,0,0,0.09);
+}
+
+/* ===== BASE ===== */
+body {
+    background: var(--dm-surface);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: var(--dm-text);
+    line-height: 1.6;
+    padding-bottom: 60px;
+}
+
+/* ===== TIÊU ĐỀ TRANG ===== */
+h1 {
+    text-align: center;
+    color: var(--dm-primary);
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 40px 0 32px;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+    h1::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: var(--dm-accent);
+        margin: 16px auto 0;
+        border-radius: 2px;
+    }
+
+h2 {
+    text-align: center;
+    color: var(--dm-primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+    h2 a {
+        color: var(--dm-accent);
+        text-decoration: none;
+        margin: 0 15px;
+        transition: all 0.2s ease;
+    }
+
+        h2 a:hover {
+            color: var(--dm-primary);
+            text-decoration: underline;
+        }
+
+/* ===== BẢNG THÔNG TIN ===== */
+table {
+    max-width: 1000px;
+    width: calc(100% - 48px);
+    margin: 30px auto 20px;
+    background: var(--dm-card);
+    border-radius: var(--dm-radius);
+    box-shadow: var(--dm-shadow);
+    border-collapse: collapse;
+    overflow: hidden;
+    border: none !important;
+}
+
+    /* --- Header thông tin --- */
+    table tr:first-child {
+        background: linear-gradient(135deg, var(--dm-primary) 0%, #2d2d44 100%);
+    }
+
+    table th {
+        padding: 16px 14px;
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        text-align: center;
+        border: none !important;
+        background: transparent;
+    }
+
+    /* --- Rows --- */
+    table tr {
+        border-bottom: 1px solid var(--dm-border);
+        transition: background 0.2s ease;
+    }
+
+        table tr:last-child {
+            border-bottom: none;
+        }
+
+        table tr:hover {
+            background: rgba(233, 69, 96, 0.02);
+        }
+
+    /* --- Cells --- */
+    table td {
+        padding: 14px 16px;
+        font-size: 13px;
+        border: none !important;
+        vertical-align: middle;
+    }
+
+        /* Label (cột trái) */
+        table td:first-child {
+            font-weight: 700;
+            color: var(--dm-primary);
+            width: 35%;
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+
+        /* Value (cột phải) */
+        table td:last-child {
+            color: var(--dm-text);
+            text-align: left;
+        }
+
+    /* === BẢNG CHI TIẾT SẢN PHẨM === */
+    table:last-of-type {
+        max-width: 1000px;
+        margin: 30px auto;
+    }
+
+        table:last-of-type thead {
+            background: linear-gradient(135deg, var(--dm-accent2) 0%, #d4891a 100%);
+        }
+
+        table:last-of-type th {
+            padding: 16px 14px;
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-align: center;
+            border: none !important;
+        }
+
+        table:last-of-type td {
+            padding: 12px 14px;
+            font-size: 13px;
+            text-align: center;
+            border: none !important;
+            border-bottom: 1px solid var(--dm-border);
+        }
+
+        table:last-of-type tr:last-child td {
+            border-bottom: none;
+        }
+
+        table:last-of-type tr:hover {
+            background: rgba(245, 166, 35, 0.05);
+        }
+
+        /* STT */
+        table:last-of-type td:nth-child(1) {
+            width: 40px;
+            font-weight: 700;
+            color: var(--dm-accent);
+        }
+
+        /* Tên sản phẩm */
+        table:last-of-type td:nth-child(2) {
+            text-align: left;
+            min-width: 140px;
+            font-weight: 600;
+        }
+
+        /* Hãng */
+        table:last-of-type td:nth-child(3) {
+            width: 100px;
+            color: var(--dm-muted);
+        }
+
+        /* Giá */
+        table:last-of-type td:nth-child(4) {
+            width: 100px;
+            color: var(--dm-accent);
+            font-weight: 700;
+        }
+
+        /* Số lượng */
+        table:last-of-type td:nth-child(5) {
+            width: 70px;
+            font-weight: 600;
+            color: var(--dm-success);
+        }
+
+        /* Thành tiền */
+        table:last-of-type td:nth-child(6) {
+            width: 120px;
+            color: var(--dm-accent);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+    /* --- Empty state --- */
+    table tr td[colspan] {
+        text-align: center !important;
+        padding: 40px 20px !important;
+        color: var(--dm-muted) !important;
+        font-style: italic;
+        background-color: #f9f9f9;
+    }
+
+/* ===== NÚT HÀNH ĐỘNG ===== */
+.detail-actions {
+    max-width: 1000px;
+    width: calc(100% - 48px);
+    margin: 30px auto;
+    text-align: center;
+}
+
+    .detail-actions a {
+        display: inline-block;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, var(--dm-primary) 0%, #2d2d44 100%);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(26, 26, 46, 0.2);
+    }
+
+        .detail-actions a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 26, 46, 0.3);
+        }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dm-surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dm-muted);
+    border-radius: 5px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--dm-primary);
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    table {
+        width: calc(100% - 24px);
+        margin: 20px 12px;
+    }
+
+    .detail-actions {
+        width: calc(100% - 24px);
+        margin: 20px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+        margin: 24px 0 20px;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+        margin: 15px 0;
+    }
+
+        h2 a {
+            display: block;
+            margin: 8px 0;
+        }
+
+    table th,
+    table td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+        table td:first-child {
+            width: 40%;
+        }
+
+    table:last-of-type td {
+        padding: 10px 6px;
+        font-size: 11px;
+    }
+
+    .detail-actions a {
+        display: block;
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    h2 {
+        font-size: 1rem;
+    }
+
+    table {
+        width: 100%;
+        margin: 15px 0;
+    }
+
+        table th,
+        table td {
+            padding: 8px 6px;
+            font-size: 11px;
+        }
+
+            table td:first-child {
+                width: 35%;
+            }
+
+        table:last-of-type th,
+        table:last-of-type td {
+            padding: 8px 5px;
+            font-size: 10px;
+        }
+
+            table:last-of-type td:nth-child(2) {
+                text-align: left;
+                min-width: 100px;
+            }
+
+    .detail-actions {
+        width: 100%;
+        margin: 15px 0;
+        padding: 0 10px;
+    }
+
+        .detail-actions a {
+            padding: 10px 16px;
+            font-size: 11px;
+        }
+}

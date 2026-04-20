@@ -1,6 +1,3 @@
-<?php
-session_start();
-?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -9,76 +6,90 @@ session_start();
     <title>Sửa vận chuyển</title>
 </head>
 <body>
-    <h1 align="center">SỬA THÔNG TIN VẬN CHUYỂN</h1>
-    
+    <h1 align="center">SỬA VẬN CHUYỂN</h1>
+
     <?php
-        include($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/QLShopDT_API/api/db.php');
-        if (!isset($_SESSION['username'])) {
-            echo "<p align='center'>Vui lòng <a href='../login.php'>đăng nhập</a></p>";
-            exit();
-        }
+    session_start();
+    include "../../includes/api_helper.php";
+    requireLogin();
 
-        $username = $_SESSION['username'];
-        mysqli_set_charset($conn, "utf8");
-        
-        $sql_get_role = "SELECT role FROM taikhoan WHERE tentk = '$username'";
-        $result_role = mysqli_query($conn, $sql_get_role);
-        $row_role = mysqli_fetch_object($result_role);
+    $mavc     = $_GET['mavc'] ?? $_POST['mavc'] ?? 0;
+    $thongbao = "";
 
-        if ($row_role->role == '0') {
-            echo "<p align='center'>Bạn không có quyền sửa vận chuyển!</p>";
-            echo "<p align='center'><a href='vanchuyen.php'>Quay lại</a></p>";
-            exit();
-        }
+    // Xử lý khi submit form (UPDATE)
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $ngaygiao = $_POST['txt_ngaygiao'] ?? '';
 
-        $mavc = isset($_REQUEST["mavc"]) ? $_REQUEST["mavc"] : "";
-        
-        if (empty($mavc)) {
-            echo "<p align='center'>Không tìm thấy thông tin vận chuyển</p>";
-            exit();
-        }
+        // Validate dữ liệu
+        if (empty($ngaygiao)) {
+            $thongbao = "Vui lòng điền đầy đủ thông tin";
+        } else {
+            // Gọi API cập nhật vận chuyển
+            $result = callVanchuyenAPI([
+                "action"   => "update",
+                "mavc"     => $mavc,
+                "ngaygiao" => $ngaygiao
+            ]);
 
-        $sql_select = "SELECT vc.mavc, vc.madh, vc.makh, vc.ngaygiao,
-                              kh.tenkh, dh.trigia
-                       FROM vanchuyen vc
-                       JOIN khachhang kh ON vc.makh = kh.makh
-                       JOIN donhang dh ON vc.madh = dh.madh
-                       WHERE vc.mavc = '$mavc'";
-        $result = mysqli_query($conn, $sql_select);
-        
-        if (!$result || mysqli_num_rows($result) == 0) {
-            echo "<p align='center'>Không tìm thấy thông tin vận chuyển</p>";
-            exit();
+            if ($result && $result['status']) {
+                header("Location: vanchuyen.php");
+                exit();
+            } else {
+                $thongbao = "Lỗi: " . ($result['message'] ?? 'Không xác định');
+            }
         }
-        
-        $row = mysqli_fetch_object($result);
+    }
+
+    // Lấy thông tin vận chuyển hiện tại để điền vào form
+    $result_vc = callVanchuyenAPI([
+        "action" => "getone",
+        "mavc"   => $mavc
+    ]);
+
+    if (!($result_vc && $result_vc['status'])) {
+        echo "<p align='center' style='color:red;'>Không tìm thấy vận chuyển</p>";
+        echo "<p align='center'><a href='vanchuyen.php'>Quay lại</a></p>";
+        exit();
+    }
+    $vc = $result_vc['data'];
     ?>
 
-    <form action="vanchuyen_edit_save.php" method="post">
-        <input type="hidden" name="mavc" value="<?php echo $row->mavc; ?>">
-        
-        <table border="1" align="center">
+    <?php if ($thongbao): ?>
+        <p align="center" style="color:red;"><?php echo $thongbao; ?></p>
+    <?php endif; ?>
+
+    <form method="post" action="vanchuyen_edit.php?mavc=<?php echo $mavc; ?>">
+        <input type="hidden" name="mavc" value="<?php echo $mavc; ?>">
+
+        <table align="center" border="1">
             <tr>
                 <td colspan="2" align="center">Thông tin vận chuyển</td>
             </tr>
             <tr>
                 <td>Mã vận chuyển:</td>
-                <td><strong><?php echo $row->mavc; ?></strong></td>
+                <td><strong><?php echo htmlspecialchars($vc['mavc']); ?></strong></td>
             </tr>
             <tr>
                 <td>Đơn hàng:</td>
-                <td>Đơn hàng #<?php echo $row->madh; ?> - <?php echo $row->tenkh; ?> - <?php echo number_format($row->trigia); ?> VNĐ</td>
+                <td>
+                    Đơn hàng #<?php echo htmlspecialchars($vc['madh']); ?> - 
+                    <?php echo htmlspecialchars($vc['tenkh']); ?> - 
+                    <?php echo number_format($vc['trigia'] ?? 0); ?> VNĐ
+                </td>
+            </tr>
+            <tr>
+                <td>Địa chỉ giao hàng:</td>
+                <td><?php echo htmlspecialchars($vc['diachi'] ?? ''); ?></td>
             </tr>
             <tr>
                 <td>Ngày giao dự kiến:</td>
                 <td>
-                    <input type="date" name="ngaygiao" value="<?php echo $row->ngaygiao; ?>" required>
+                    <input type="date" name="txt_ngaygiao" value="<?php echo htmlspecialchars($vc['ngaygiao']); ?>" required>
                 </td>
             </tr>
             <tr>
                 <td colspan="2" align="center">
-                    <input type="submit" value="Cập nhật">
+                    <input type="submit" value="OK">
                     <input type="reset" value="Reset">
                     <input type="button" value="Quay lại" onclick="window.location.href='vanchuyen.php'">
                 </td>
